@@ -28,5 +28,5 @@ for(const [file,name] of [['regions.tsx','Regions'],['inquiry.tsx','Inquiry']]){
 const env={...process.env};delete env.RESEND_API_KEY;delete env.INQUIRY_TO_EMAIL;delete env.INQUIRY_FROM_EMAIL;
 const build=spawnSync(process.execPath,[resolve(root,'node_modules/next/dist/bin/next'),'build'],{cwd:stage,env,stdio:'inherit'});
 if(build.status!==0)process.exit(build.status||1);
-const output=resolve(root,'.site-preview');rmSync(output,{recursive:true,force:true});cpSync(join(stage,'out'),output,{recursive:true});
-console.log('Client preview exported to .site-preview');
+const output=resolve(root,'out');rmSync(output,{recursive:true,force:true});cpSync(join(stage,'out'),output,{recursive:true});
+console.log('Client preview exported to out');
