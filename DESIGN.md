@@ -1,24 +1,27 @@
 # Logistic Hub design system
 
 ## Direction
-Automotive touring editorial: panoramic moving-car photography, condensed transport lettering, deep evergreen and ivory surfaces, signal-orange actions. Calm, precise and human. The visual signature is a large photographic opening followed by a three-region destination rail, then a deliberate shift into spacious explanatory content.
+Automotive touring editorial: panoramic moving-car photography, condensed transport lettering, deep logo navy and ivory surfaces, signal-orange actions. Calm, precise and human. The visual signature is a large photographic opening followed by a three-region destination rail, then a deliberate shift into spacious explanatory content.
 
 ## Tokens
+The palette follows the logo navy. Neutrals are ivory mixed with a little navy so light surfaces stay warm; every text pairing meets WCAG AA.
+
 The implementation source is `app/globals.css`; fonts are registered in `components/document-layout.tsx`.
 
 | CSS token | Value | Use |
 | --- | --- | --- |
-| `--green` | `#132d2a` | Primary text, buttons and dark sections |
-| `--deep` | `#10221f` | Footer and dark button hover |
+| `--navy` | `#16213a` | Logo colour; primary text, buttons and dark sections |
+| `--deep` | `#0e1527` | Footer and dark button hover |
 | `--ivory` | `#f5f5ef` | Page and navigation background |
 | `--paper` | `#fcfcf8` | Form surface and text on dark backgrounds |
 | `--orange` / `--orange-hover` | `#ef6a3a` / `#f7845a` | Primary conversion, accents and focus |
-| `--muted` | `#52635a` | Supporting text on light backgrounds |
-| `--light-muted` | `#c5d2cc` | Supporting text on dark backgrounds |
-| `--surface` / `--surface-hover` | `#e8ece3` / `#dde5d7` | Sourcing, inquiry and dealer strip surfaces |
-| `--line` | `#d8ded5` | Light-surface rules and input borders |
-| `--green-line` / `--muted-line` / `--footer-line` | `#47615b` / `#a7b8aa` / `#34504a` | Rules on their corresponding surfaces |
+| `--muted` | `#4f586b` | Supporting text on light backgrounds |
+| `--light-muted` | `#c3c9d6` | Supporting text on dark backgrounds |
+| `--surface` / `--surface-hover` | `#e5e6e2` / `#dddedb` | Sourcing, inquiry and dealer strip surfaces |
+| `--line` | `#d8d9d7` | Light-surface rules and input borders |
+| `--navy-line` / `--muted-line` / `--footer-line` | `#4e5667` / `#a7abb0` / `#29324a` | Rules on their corresponding surfaces |
 | `--error` | `#9c2c14` | Form errors |
+| `--brand-gold` | `#f2a541` | Logo star only |
 | `--radius` | `4px` | Buttons; inputs also use 4px corners |
 | `--ease` | `cubic-bezier(0.16, 1, 0.3, 1)` | Hero entrance and image hover |
 
@@ -56,7 +59,7 @@ Mobbin Rivian section https://mobbin.com/sites/sections/0a91dbdc-148e-4b04-91fd-
 Fee tables live in `lib/auction-fees.ts`, copied from the official Copart (standard licensed and public pricing, identical) and IAA (Standard Volume licensed) schedules for standard vehicles paid with secured funds. Each source URL and the date it was checked are shown on the page. When an auction publishes a new schedule, update the tiers, the fixed fees and `feeSources.checked`, then the unit test in `tests/calculator.spec.ts`. Fees without a published amount (IAA's EH&S and fuel surcharge) and situational fees (storage, late payment, title shipping, premium imagery) are listed as not included instead of estimated. Money and dates are formatted by hand, not with `Intl`, because Node and browsers ship different Georgian and Russian locale data and would break hydration. The calculator shows auction fees only; Logistic Hub's own service fee and shipping are not added until the client provides them.
 
 ## Logo
-The client-supplied quartered-circle logo is inlined in `Brand` (`components/header.tsx`) without its embedded metadata, so it can take `currentColor`: brand navy `--brand-navy` (#16213a) in the header and paper in the dark footer, with the star always `--brand-gold` (#f2a541). It is 42px tall on desktop and 36px below 760px; the wordmark is small inside the lockup, so do not shrink it further. The favicon (`app/icon.svg`) is the round mark alone and switches to ivory in dark browser themes.
+The client-supplied quartered-circle logo is inlined in `Brand` (`components/header.tsx`) without its embedded metadata, so it can take `currentColor`: brand navy `--navy` (#16213a) in the header and paper in the dark footer, with the star always `--brand-gold` (#f2a541). It is 42px tall on desktop and 36px below 760px; the wordmark is small inside the lockup, so do not shrink it further. The favicon (`app/icon.svg`) is the round mark alone and switches to ivory in dark browser themes.
 
 ## Content and assets
 Only substantiated claims from PRODUCT.md. Stock photography is illustrative, never current inventory or company operations. Auction names are text labels, not fabricated partner logos. Contact destination is configuration, with an honest downloadable inquiry fallback. Do not invent prices, delivery promises, testimonials, phone numbers or office details. Keep the voice direct and reassuring, with individual financial and dealer terms discussed with a manager.

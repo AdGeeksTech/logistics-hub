@@ -1,20 +1,19 @@
 :root {
-  --green: #132d2a;
-  --deep: #10221f;
+  --navy: #16213a;
+  --deep: #0e1527;
   --ivory: #f5f5ef;
   --paper: #fcfcf8;
   --orange: #ef6a3a;
   --orange-hover: #f7845a;
-  --muted: #52635a;
-  --line: #d8ded5;
-  --light-muted: #c5d2cc;
-  --surface: #e8ece3;
-  --surface-hover: #dde5d7;
-  --green-line: #47615b;
-  --muted-line: #a7b8aa;
-  --footer-line: #34504a;
+  --muted: #4f586b;
+  --line: #d8d9d7;
+  --light-muted: #c3c9d6;
+  --surface: #e5e6e2;
+  --surface-hover: #dddedb;
+  --navy-line: #4e5667;
+  --muted-line: #a7abb0;
+  --footer-line: #29324a;
   --error: #9c2c14;
-  --brand-navy: #16213a;
   --brand-gold: #f2a541;
   --radius: 4px;
   --s1: 4px;
@@ -39,7 +38,7 @@ html {
 body {
   margin: 0;
   background: var(--ivory);
-  color: var(--green);
+  color: var(--navy);
   font-family: var(--font-body), sans-serif;
   font-size: 15px;
   line-height: 1.7;
@@ -132,7 +131,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--s8);
-  background: var(--green);
+  background: var(--navy);
   color: var(--paper);
   min-height: 48px;
   padding: 12px 23px;
@@ -201,7 +200,7 @@ button {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--brand-navy);
+  color: var(--navy);
 }
 .brand > svg {
   width: auto;
@@ -252,7 +251,7 @@ button {
   position: relative;
   isolation: isolate;
   color: var(--paper);
-  background: var(--green);
+  background: var(--navy);
 }
 .hero-image {
   z-index: -3;
@@ -265,11 +264,11 @@ button {
   background:
     linear-gradient(
       90deg,
-      rgba(8, 25, 23, 0.9) 0%,
-      rgba(8, 25, 23, 0.72) 29%,
-      rgba(8, 25, 23, 0.1) 68%
+      rgba(9, 14, 28, 0.9) 0%,
+      rgba(9, 14, 28, 0.72) 29%,
+      rgba(9, 14, 28, 0.1) 68%
     ),
-    linear-gradient(0deg, rgba(8, 25, 23, 0.75), transparent 27%);
+    linear-gradient(0deg, rgba(9, 14, 28, 0.75), transparent 27%);
 }
 .hero-content {
   padding-top: 70px;
@@ -323,7 +322,7 @@ button {
   letter-spacing: 0.14em;
 }
 .origin-rail {
-  background: var(--green);
+  background: var(--navy);
   color: var(--paper);
 }
 .origin-inner {
@@ -344,7 +343,7 @@ button {
 .origin-inner > a {
   padding-inline: 32px;
   min-height: 54px;
-  border-left: 1px solid var(--green-line);
+  border-left: 1px solid var(--navy-line);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -394,7 +393,7 @@ button {
   position: absolute;
   inset: 40% 0 0;
   z-index: -1;
-  background: linear-gradient(transparent, rgba(8, 25, 23, 0.94));
+  background: linear-gradient(transparent, rgba(9, 14, 28, 0.94));
 }
 .buyer-photo img {
   z-index: -2;
@@ -436,7 +435,7 @@ button {
   transition: background 180ms;
 }
 .round-link:hover {
-  background: var(--green);
+  background: var(--navy);
 }
 .service-detail {
   padding-right: var(--s8);
@@ -535,7 +534,7 @@ button {
   min-height: 50px;
 }
 .region-tabs button[aria-selected="true"] {
-  border-color: var(--green);
+  border-color: var(--navy);
 }
 .region-tabs button:not([aria-selected="true"]) {
   color: var(--muted);
@@ -625,10 +624,10 @@ button {
   color: var(--muted);
 }
 .inspection-note strong {
-  color: var(--green);
+  color: var(--navy);
 }
 .about-section {
-  background: var(--green);
+  background: var(--navy);
   color: var(--paper);
   padding-block: var(--s24);
 }
@@ -660,7 +659,7 @@ button {
   gap: 28px;
   align-items: center;
   padding-bottom: 28px;
-  border-bottom: 1px solid var(--green-line);
+  border-bottom: 1px solid var(--navy-line);
 }
 .experience > span {
   font-family: var(--font-display);
@@ -768,7 +767,7 @@ button {
 .faq-plus:after {
   content: "";
   position: absolute;
-  background: var(--green);
+  background: var(--navy);
   height: 1px;
   width: 14px;
   left: 1px;
@@ -848,7 +847,7 @@ details[open] .faq-plus:after {
   position: relative;
 }
 .audience-toggle > label.selected {
-  background: var(--green);
+  background: var(--navy);
   color: var(--paper);
 }
 .audience-toggle input {
@@ -879,7 +878,7 @@ details[open] .faq-plus:after {
   padding: 12px;
   margin-top: 8px;
   font-size: 12px;
-  color: var(--green);
+  color: var(--navy);
   font-weight: 400;
 }
 .form-wrap input::placeholder,
@@ -994,7 +993,7 @@ details[open] .faq-plus:after {
   font-size: 9px;
 }
 .dealer-hero {
-  background: var(--green);
+  background: var(--navy);
   color: var(--paper);
   padding: 32px 0 64px;
 }
@@ -1068,7 +1067,7 @@ details[open] .faq-plus:after {
   margin-bottom: 0;
 }
 .fee-summary {
-  background: var(--green);
+  background: var(--navy);
   color: var(--paper);
   padding: var(--s8);
   border-radius: 8px;
@@ -1086,7 +1085,7 @@ details[open] .faq-plus:after {
   align-items: baseline;
   gap: var(--s4);
   padding-block: var(--s3);
-  border-bottom: 1px solid var(--green-line);
+  border-bottom: 1px solid var(--navy-line);
   font-size: 14px;
 }
 .fee-summary dt {
@@ -1258,7 +1257,7 @@ details[open] .faq-plus:after {
     background: var(--ivory);
     padding: 8px 24px 24px;
     border-bottom: 1px solid var(--line);
-    box-shadow: 0 20px 24px rgba(16, 34, 31, 0.12);
+    box-shadow: 0 20px 24px rgba(14, 21, 39, 0.12);
   }
   .mobile-nav a {
     display: flex;
@@ -1279,12 +1278,12 @@ details[open] .faq-plus:after {
     background:
       linear-gradient(
         180deg,
-        rgba(8, 25, 23, 0.82) 0%,
-        rgba(8, 25, 23, 0.51) 43%,
-        rgba(8, 25, 23, 0.05) 73%,
-        rgba(8, 25, 23, 0.8) 100%
+        rgba(9, 14, 28, 0.82) 0%,
+        rgba(9, 14, 28, 0.51) 43%,
+        rgba(9, 14, 28, 0.05) 73%,
+        rgba(9, 14, 28, 0.8) 100%
       ),
-      linear-gradient(90deg, rgba(8, 25, 23, 0.25), transparent);
+      linear-gradient(90deg, rgba(9, 14, 28, 0.25), transparent);
   }
   .hero-content {
     padding-top: 48px;
@@ -1685,7 +1684,7 @@ html[lang="ka"] .desktop-nav {
   padding: var(--s2);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  color: var(--green);
+  color: var(--navy);
   background: var(--ivory);
   font-family: var(--font-body), sans-serif;
   font-size: 13px;
@@ -1762,7 +1761,7 @@ html:not([lang="en"]) .service-layout > * {
     background: var(--ivory);
     padding: var(--s2) var(--s6) var(--s6);
     border-bottom: 1px solid var(--line);
-    box-shadow: 0 20px 24px rgba(16, 34, 31, 0.12);
+    box-shadow: 0 20px 24px rgba(14, 21, 39, 0.12);
   }
   .mobile-nav a {
     display: flex;
