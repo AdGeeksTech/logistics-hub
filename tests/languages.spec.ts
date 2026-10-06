@@ -78,10 +78,12 @@ test("navigation stays readable while resizing in every language", async ({
   for (const locale of ["en", "ru", "ka"]) {
     await page.goto(locale === "en" ? "/" : `/${locale}`);
     await page.evaluate(() => document.fonts.ready);
-    for (const width of [390, 760, 761, 820, 1024, 1100, 1101, 1280, 1440]) {
+    for (const width of [
+      390, 760, 761, 820, 1024, 1100, 1101, 1200, 1201, 1280, 1440,
+    ]) {
       await page.setViewportSize({ width, height: 1000 });
       const menu = page.locator(".menu-toggle");
-      if (width <= 1100) {
+      if (width <= 1200) {
         await expect(menu).toBeVisible();
         await expect(page.locator(".desktop-nav")).toBeHidden();
       } else {
@@ -107,7 +109,10 @@ test("navigation stays readable while resizing in every language", async ({
     await expect(page.locator("#mobile-nav")).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 1000 });
     await expect(page.locator("#mobile-nav")).toBeHidden();
-    await expect(page.locator(".menu-toggle")).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator(".menu-toggle")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
     await page.setViewportSize({ width: 820, height: 1000 });
     await expect(page.locator(".menu-toggle")).toHaveAttribute(
       "aria-expanded",
