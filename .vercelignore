@@ -1,0 +1,13 @@
+.git
+.next
+node_modules
+.openai
+.impeccable
+.sites-runtime
+.site-preview
+out
+playwright-report
+test-results
+tests
+*.tsbuildinfo
+.env*

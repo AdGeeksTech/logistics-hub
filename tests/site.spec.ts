@@ -11,7 +11,7 @@ test("region keyboard selection prepopulates inquiry and download contains user 
     page.getByRole("tab", { name: "Europe", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
   await page.getByRole("link", { name: "Explore Europe" }).click();
-  await expect(page.getByRole("combobox")).toHaveValue("Europe");
+  await expect(page.locator('select[name="region"]')).toHaveValue("Europe");
   await page.getByRole("button", { name: "Prepare my inquiry" }).click();
   await expect(page.locator('input[name="name"]')).toBeFocused();
   await page.getByLabel("Full name").fill("Test Buyer");
@@ -99,8 +99,8 @@ test("inquiry endpoint validates payload and never claims success without config
 for (const width of [1440, 390])
   test(`accessibility at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    for (const route of ["/", "/dealers"]) {
-      await page.goto(route);
+    for (const route of ["/", "/dealers", "/calculator", "/ka/calculator"]) {
+      await page.goto(route, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       const scan = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
@@ -114,3 +114,22 @@ for (const width of [1440, 390])
       ).toEqual([]);
     }
   });
+
+test("navbar page links open the new page at the top", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [from, name, path] of [
+    ["/", "For dealers", "/dealers"],
+    ["/", "Fee calculator", "/calculator"],
+    ["/calculator", "For dealers", "/dealers"],
+  ]) {
+    await page.goto(from);
+    await page.evaluate(() => scrollTo(0, 1200));
+    await page
+      .getByRole("navigation", { name: "Main navigation" })
+      .getByRole("link", { name })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await page.waitForTimeout(800);
+    expect(await page.evaluate(() => scrollY)).toBe(0);
+  }
+});

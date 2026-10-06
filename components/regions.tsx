@@ -1,4 +1,5 @@
 "use client";
+import { translator, type Locale } from "@/lib/i18n";
 import { useRef, useState } from "react";
 import { ArrowRight, ArrowUpRight, Globe2 } from "lucide-react";
 const regions = [
@@ -27,7 +28,14 @@ const regions = [
     code: "CN",
   },
 ];
-export function Regions({ initialRegion = "USA" }: { initialRegion?: string }) {
+export function Regions({
+  initialRegion = "USA",
+  locale = "en",
+}: {
+  initialRegion?: string;
+  locale?: Locale;
+}) {
+  const t = translator(locale);
   const [active, setActive] = useState(
     Math.max(
       0,
@@ -41,23 +49,23 @@ export function Regions({ initialRegion = "USA" }: { initialRegion?: string }) {
       <div className="container region-layout">
         <div>
           <h2 id="regions-heading">
-            Three regions.
+            {t("Three regions.")}
             <br />
-            One trusted team.
+            {t("One trusted team.")}
           </h2>
           <p className="section-copy">
-            Look beyond borders. We’ll take care of the journey.
+            {t("Look beyond borders. We’ll take care of the journey.")}
           </p>
         </div>
         <div className="region-picker">
           <div
             className="region-tabs"
             role="tablist"
-            aria-label="Vehicle sourcing region"
+            aria-label={t("Vehicle sourcing region")}
           >
             {regions.map((region, i) => (
               <button
-                key={region.name}
+                key={t(region.name)}
                 ref={(node) => {
                   refs.current[i] = node;
                 }}
@@ -79,7 +87,7 @@ export function Regions({ initialRegion = "USA" }: { initialRegion?: string }) {
                   refs.current[next]?.focus();
                 }}
               >
-                <span>{region.name}</span>
+                <span>{t(region.name)}</span>
                 <ArrowUpRight size={20} />
               </button>
             ))}
@@ -98,17 +106,17 @@ export function Regions({ initialRegion = "USA" }: { initialRegion?: string }) {
               </span>
               <span className="route-line" />
               <ArrowRight size={16} />
-              <span>Tbilisi, GE</span>
+              <span>{t("Tbilisi, GE")}</span>
             </div>
-            <h3>{current.title}</h3>
-            <p>{current.description}</p>
+            <h3>{t(current.title)}</h3>
+            <p>{t(current.description)}</p>
             <div className="region-bottom">
-              <span>{current.detail}</span>
+              <span>{t(current.detail)}</span>
               <a
                 className="text-link"
                 href={`?region=${encodeURIComponent(current.name)}#inquiry`}
               >
-                Explore {current.name}
+                {t("Explore")} {t(current.name)}
                 <ArrowUpRight size={17} />
               </a>
             </div>

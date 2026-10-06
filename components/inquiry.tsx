@@ -1,16 +1,20 @@
 "use client";
+import { translator, type Locale } from "@/lib/i18n";
 import { useState } from "react";
 import { ArrowUpRight, Check, Download, LoaderCircle } from "lucide-react";
 type Status = "idle" | "sending" | "sent" | "prepared" | "error";
 export function Inquiry({
+  locale = "en",
   dealer = false,
   connected = false,
   initialRegion = "Not sure yet",
 }: {
+  locale?: Locale;
   dealer?: boolean;
   connected?: boolean;
   initialRegion?: string;
 }) {
+  const t = translator(locale);
   const [status, setStatus] = useState<Status>("idle");
   const [region, setRegion] = useState(initialRegion);
   const [audience, setAudience] = useState(dealer ? "Dealer" : "Private buyer");
@@ -19,7 +23,7 @@ export function Inquiry({
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
-    const text = `LOGISTIC HUB — VEHICLE INQUIRY\n\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone || "Not provided"}\nCustomer: ${audience}\nRegion: ${region}\n\nVehicle requirements:\n${data.message}\n`;
+    const text = `LOGISTIC HUB — ${t("VEHICLE INQUIRY")}\n\n${t("Name")}: ${data.name}\n${t("Email")}: ${data.email}\n${t("Phone")}: ${data.phone || t("Not provided")}\n${t("Customer")}: ${t(audience)}\n${t("Region")}: ${t(region)}\n\n${t("Vehicle requirements")}:\n${data.message}\n`;
     setSummary(text);
     setError("");
     if (!connected) {
@@ -31,19 +35,21 @@ export function Inquiry({
       const response = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, audience, region }),
+        body: JSON.stringify({ ...data, audience, region, locale }),
       });
       const result = await response.json();
       if (!response.ok)
         throw new Error(
-          result.error || "Your inquiry could not be sent. Please try again.",
+          t(
+            result.error || "Your inquiry could not be sent. Please try again.",
+          ),
         );
       setStatus("sent");
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : "Could not connect. Please try again.",
+          : t("Could not connect. Please try again."),
       );
       setStatus("error");
     }
@@ -54,7 +60,10 @@ export function Inquiry({
     );
     const link = document.createElement("a");
     link.href = url;
-    link.download = "logistic-hub-inquiry.txt";
+    link.download =
+      locale === "en"
+        ? "logistic-hub-inquiry.txt"
+        : `logistic-hub-inquiry-${locale}.txt`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -63,46 +72,67 @@ export function Inquiry({
       <div className="container inquiry-layout">
         <div className="inquiry-intro">
           <h2>
-            Your next vehicle
+            {t("Your next vehicle")}
             <br />
-            starts with a<br />
-            <span>conversation.</span>
+            {t("starts with a")}
+            <br />
+            <span>{t("conversation.")}</span>
           </h2>
           <p>
-            Have a vehicle in mind? An auction lot to check? Or just a few
-            questions? Tell us where you’d like to start.
+            {t(
+              "Have a vehicle in mind? An auction lot to check? Or just a few questions? Tell us where you’d like to start.",
+            )}
           </p>
           <div className="inquiry-promise">
             <Check size={19} />
-            <span>For private buyers and professional dealers</span>
+            <span>{t("For private buyers and professional dealers")}</span>
           </div>
           <div className="inquiry-promise">
             <Check size={19} />
-            <span>Clear guidance, from selection to delivery</span>
+            <span>{t("Clear guidance, from selection to delivery")}</span>
           </div>
         </div>
         <div className="form-wrap">
           {status === "sent" ? (
             <div className="form-result" role="status">
               <Check size={32} />
-              <h3>Your inquiry is on its way.</h3>
-              <p>Our team will contact you using the details you provided.</p>
+              <h3>{t("Your inquiry is on its way.")}</h3>
+              <p>
+                {t("Our team will contact you using the details you provided.")}
+              </p>
               <button className="button" onClick={() => setStatus("idle")}>
-                Prepare another inquiry
+                {t("Prepare another inquiry")}
                 <ArrowUpRight size={17} />
               </button>
             </div>
           ) : (
-            <form onSubmit={submit}>
+            <form
+              onSubmit={submit}
+              onInvalid={(event) => {
+                const field = event.target as HTMLInputElement;
+                field.setCustomValidity(
+                  field.validity.valueMissing
+                    ? t("Please fill in this field.")
+                    : field.validity.typeMismatch
+                      ? t("Enter a valid email address.")
+                      : field.validity.tooShort
+                        ? t("Please enter at least 10 characters.")
+                        : "",
+                );
+              }}
+              onInput={(event) => {
+                (event.target as HTMLInputElement).setCustomValidity?.("");
+              }}
+            >
               <p className="form-note required-note">
-                All fields are required unless marked optional.
+                {t("All fields are required unless marked optional.")}
               </p>
               <fieldset>
-                <legend>I’m looking for a vehicle as a</legend>
+                <legend>{t("I’m looking for a vehicle as a")}</legend>
                 <div className="audience-toggle">
                   {["Private buyer", "Dealer"].map((type) => (
                     <label
-                      key={type}
+                      key={t(type)}
                       className={audience === type ? "selected" : ""}
                     >
                       <input
@@ -115,25 +145,25 @@ export function Inquiry({
                           setStatus("idle");
                         }}
                       />
-                      {type}
+                      {t(type)}
                     </label>
                   ))}
                 </div>
               </fieldset>
               <div className="form-grid">
                 <label>
-                  Full name
+                  {t("Full name")}
                   <input
                     name="name"
                     autoComplete="name"
-                    placeholder="Your name"
+                    placeholder={t("Your name")}
                     required
                     maxLength={120}
                     onChange={() => setStatus("idle")}
                   />
                 </label>
                 <label>
-                  Email address
+                  {t("Email address")}
                   <input
                     name="email"
                     type="email"
@@ -145,7 +175,8 @@ export function Inquiry({
                   />
                 </label>
                 <label>
-                  Phone <span>(optional)</span>
+                  {t("Phone")}
+                  <span>{t("(optional)")}</span>
                   <input
                     name="phone"
                     type="tel"
@@ -156,7 +187,7 @@ export function Inquiry({
                   />
                 </label>
                 <label>
-                  Sourcing region
+                  {t("Sourcing region")}
                   <select
                     name="region"
                     value={region}
@@ -166,16 +197,20 @@ export function Inquiry({
                     }}
                   >
                     {["Not sure yet", "USA", "Europe", "China"].map((r) => (
-                      <option key={r}>{r}</option>
+                      <option key={r} value={r}>
+                        {t(r)}
+                      </option>
                     ))}
                   </select>
                 </label>
               </div>
               <label>
-                What are you looking for?
+                {t("What are you looking for?")}
                 <textarea
                   name="message"
-                  placeholder="A make and model, your budget, or a link to an auction lot…"
+                  placeholder={t(
+                    "A make and model, your budget, or a link to an auction lot…",
+                  )}
                   required
                   minLength={10}
                   maxLength={3000}
@@ -185,7 +220,7 @@ export function Inquiry({
               </label>
               <div className="honeypot" aria-hidden="true">
                 <label>
-                  Website
+                  {t("Website")}
                   <input name="website" tabIndex={-1} autoComplete="off" />
                 </label>
               </div>
@@ -201,34 +236,37 @@ export function Inquiry({
               >
                 {status === "sending" ? (
                   <>
-                    Sending inquiry
+                    {t("Sending inquiry")}
                     <LoaderCircle className="spin" size={18} />
                   </>
                 ) : (
                   <>
-                    {connected ? "Send inquiry" : "Prepare my inquiry"}
+                    {t(connected ? "Send inquiry" : "Prepare my inquiry")}
                     <ArrowUpRight size={18} />
                   </>
                 )}
               </button>
               <p className="form-note">
-                {connected
-                  ? "Your details will be used to respond to this inquiry."
-                  : "Prepare a summary to share with our team. Online sending is not available yet."}
+                {t(
+                  connected
+                    ? "Your details will be used to respond to this inquiry."
+                    : "Prepare a summary to share with our team. Online sending is not available yet.",
+                )}
               </p>
               {status === "prepared" && (
                 <div className="prepared-result" role="status">
-                  <strong>Your inquiry is ready.</strong>
+                  <strong>{t("Your inquiry is ready.")}</strong>
                   <p>
-                    Download your summary and share it with your Logistic Hub
-                    contact. Nothing has been sent.
+                    {t(
+                      "Download your summary and share it with your Logistic Hub contact. Nothing has been sent.",
+                    )}
                   </p>
                   <button
                     type="button"
                     className="text-link"
                     onClick={download}
                   >
-                    Download inquiry
+                    {t("Download inquiry")}
                     <Download size={16} />
                   </button>
                 </div>

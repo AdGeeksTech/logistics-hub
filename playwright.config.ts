@@ -1,6 +1,9 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
-  use: { baseURL: "http://localhost:3001", headless: true },
+  use: {
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3001",
+    headless: true,
+  },
   reporter: "list",
 });

@@ -4,7 +4,7 @@
 Automotive touring editorial: panoramic moving-car photography, condensed transport lettering, deep evergreen and ivory surfaces, signal-orange actions. Calm, precise and human. The visual signature is a large photographic opening followed by a three-region destination rail, then a deliberate shift into spacious explanatory content.
 
 ## Tokens
-The implementation source is `app/globals.css`; fonts are registered in `app/layout.tsx`.
+The implementation source is `app/globals.css`; fonts are registered in `components/document-layout.tsx`.
 
 | CSS token | Value | Use |
 | --- | --- | --- |
@@ -30,9 +30,9 @@ The implementation source is `app/globals.css`; fonts are registered in `app/lay
 - Headings are sentence case except the condensed homepage display headline. No decorative eyebrows.
 
 ## Composition and responsive behavior
-The homepage flows through the photographic hero, destination rail, buyer services and dealer link, sourcing tabs, six-step process, company experience, auction names, FAQ and inquiry. A dedicated `/dealers` page shares navigation, inquiry and footer styling and starts its inquiry in Dealer mode.
+The homepage flows through the photographic hero, destination rail, buyer services and dealer link, sourcing tabs, six-step process, company experience, auction names, FAQ and inquiry. A dedicated `/dealers` page shares navigation, inquiry and footer styling and starts its inquiry in Dealer mode. The `/calculator` page reuses the dark dealer hero, then pairs a calculator form (auction, winning bid, Copart title type, live bid or pre-bid) with a dark fee breakdown that updates as the inputs change, followed by the inquiry preset to USA.
 
-Below 760px, navigation becomes a disclosure menu, paired content columns stack, form fields use one column, and the process retains two columns. The origin rail keeps three destinations with its introductory line above them. Hero crops and overlays change for narrow screens so the text remains readable. Check both 390px and 1440px when changing layout.
+At 1100px and below, navigation becomes a disclosure menu to accommodate translated labels. At desktop widths, labels stay on one line; resizing to desktop closes any open disclosure. Below 760px, paired content columns stack, form fields use one column, and the process retains two columns. The origin rail keeps three destinations with its introductory line above them. Hero crops and overlays change for narrow screens so the text remains readable. Check both 390px and 1440px when changing layout.
 
 ## Interaction and accessibility
 - Keep interactive touch targets at least 44px. Standard buttons are 48px tall; form controls are at least 46px. Mobile text inputs, selects and textareas use 16px text to avoid focus zoom.
@@ -52,5 +52,13 @@ Without delivery configuration, the action reads “Prepare my inquiry.” It pr
 ## References
 Mobbin Rivian section https://mobbin.com/sites/sections/0a91dbdc-148e-4b04-91fd-c76cf43e4262 : photographic detail and concise content, clear segmented controls. The initial Mobbin United Carriers and Aurora hero references informed panoramic transport imagery and large type; this site uses automotive sourcing content and its own composition.
 
+## Auction fee calculator
+Fee tables live in `lib/auction-fees.ts`, copied from the official Copart (standard licensed and public pricing, identical) and IAA (Standard Volume licensed) schedules for standard vehicles paid with secured funds. Each source URL and the date it was checked are shown on the page. When an auction publishes a new schedule, update the tiers, the fixed fees and `feeSources.checked`, then the unit test in `tests/calculator.spec.ts`. Fees without a published amount (IAA's EH&S and fuel surcharge) and situational fees (storage, late payment, title shipping, premium imagery) are listed as not included instead of estimated. Money and dates are formatted by hand, not with `Intl`, because Node and browsers ship different Georgian and Russian locale data and would break hydration. The calculator shows auction fees only; Logistic Hub's own service fee and shipping are not added until the client provides them.
+
 ## Content and assets
 Only substantiated claims from PRODUCT.md. Stock photography is illustrative, never current inventory or company operations. Auction names are text labels, not fabricated partner logos. Contact destination is configuration, with an honest downloadable inquiry fallback. Do not invent prices, delivery promises, testimonials, phone numbers or office details. Keep the voice direct and reassuring, with individual financial and dealer terms discussed with a manager.
+
+## Languages
+English keeps `/`, `/dealers` and `/calculator`; Russian uses `/ru`, `/ru/dealers` and `/ru/calculator`; Georgian uses `/ka`, `/ka/dealers` and `/ka/calculator`. Each root document declares its own HTML language and translated metadata with alternate-language links. The header language selector preserves the page, query string and section anchor. Brand and auction names remain unchanged. Locale dictionaries live in `lib/i18n/` and stable English values remain internal identifiers for regions and buyer types.
+
+Russian headlines use self-hosted Oswald with Cyrillic coverage; English headlines retain Barlow Condensed. Body Manrope now uses the complete variable font with Cyrillic coverage. Georgian uses self-hosted Noto Sans Georgian for display and body, with less condensed heading sizes and more line height. Localized mobile headline sizes are intentionally smaller to fit longer text. All localized forms, native validation overrides, statuses, error messages, image descriptions and downloaded inquiry summaries use the selected language. Phone remains optional. Language selection is URL-based; no geolocation or forced browser-language redirects.

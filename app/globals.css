@@ -1041,6 +1041,102 @@ details[open] .faq-plus:after {
   font-size: 14px;
   color: var(--muted);
 }
+.dealer-content .text-link {
+  margin-top: var(--s4);
+}
+.calculator-hero p {
+  max-width: 520px;
+  margin-bottom: 0;
+}
+.calculator-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s16);
+  align-items: start;
+}
+.calculator-layout .form-wrap {
+  border: 1px solid var(--line);
+}
+.bid-field {
+  display: block;
+  margin-bottom: var(--s6);
+}
+.form-wrap .bid-field input {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.calculator-layout fieldset:last-child {
+  margin-bottom: 0;
+}
+.fee-summary {
+  background: var(--green);
+  color: var(--paper);
+  padding: var(--s8);
+  border-radius: 8px;
+}
+.fee-summary h2 {
+  font-size: 36px;
+  margin-bottom: var(--s6);
+}
+.fee-summary dl {
+  margin: 0;
+}
+.fee-summary dl > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s4);
+  padding-block: var(--s3);
+  border-bottom: 1px solid var(--green-line);
+  font-size: 14px;
+}
+.fee-summary dt {
+  color: var(--light-muted);
+}
+.fee-summary dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.fee-summary .fee-subtotal dt {
+  color: var(--paper);
+  font-weight: 700;
+}
+.fee-summary .fee-total {
+  border-bottom: 0;
+  padding-top: var(--s6);
+}
+.fee-total dt {
+  color: var(--paper);
+}
+.fee-total dd {
+  font-family: var(--font-display), sans-serif;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--orange);
+}
+.fee-empty {
+  padding-block: var(--s6);
+  font-size: 14px;
+  color: var(--light-muted);
+}
+.fee-note {
+  margin-top: var(--s4);
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--light-muted);
+}
+.fee-source {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1);
+  color: var(--paper);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 @keyframes arrive {
   from {
     opacity: 0.7;
@@ -1113,6 +1209,9 @@ details[open] .faq-plus:after {
   }
   .dealer-hero h1 {
     font-size: 70px;
+  }
+  .calculator-layout {
+    gap: var(--s12);
   }
 }
 @media (max-width: 760px) {
@@ -1499,6 +1598,19 @@ details[open] .faq-plus:after {
   .dealer-content p {
     font-size: 13px;
   }
+  .calculator-layout {
+    grid-template-columns: 1fr;
+    gap: var(--s8);
+  }
+  .fee-summary {
+    padding: var(--s6);
+  }
+  .fee-summary h2 {
+    font-size: 32px;
+  }
+  .fee-total dd {
+    font-size: 36px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -1514,4 +1626,247 @@ details[open] .faq-plus:after {
 
 .required-note {
   margin: 0 0 var(--s6);
+}
+
+/* Script-aware type keeps the established identity legible in every language. */
+html[lang="ru"] body {
+  --font-display: var(--font-cyrillic);
+}
+html[lang="ka"] body {
+  --font-display: var(--font-georgian);
+  --font-body: var(--font-georgian);
+}
+html:not([lang="en"]) h1,
+html:not([lang="en"]) h2 {
+  line-height: 1.2;
+}
+html[lang="ru"] .hero h1 {
+  font-size: clamp(50px, 5.2vw, 76px);
+  line-height: 1.14;
+}
+html[lang="ka"] .hero h1 {
+  font-size: clamp(38px, 4.2vw, 61px);
+  line-height: 1.3;
+  max-width: 800px;
+}
+html[lang="ka"] h2 {
+  font-size: clamp(29px, 3vw, 43px);
+  line-height: 1.35;
+}
+html[lang="ka"] .photo-caption h3,
+html[lang="ka"] .service-detail h3,
+html[lang="ka"] .dealer-strip h3 {
+  font-size: 27px;
+  line-height: 1.45;
+}
+html[lang="ru"] .service-detail h3 {
+  font-size: 36px;
+}
+html[lang="ka"] .inquiry-intro h2 {
+  font-size: 43px;
+}
+html[lang="ka"] .dealer-hero h1 {
+  font-size: 53px;
+}
+html[lang="ru"] .dealer-hero h1 {
+  font-size: 64px;
+}
+html[lang="ka"] .origin-inner > a {
+  font-size: 25px;
+}
+html[lang="ka"] .region-tabs button {
+  font-size: 22px;
+}
+html:not([lang="en"]) .desktop-nav {
+  gap: var(--s6);
+}
+html[lang="ka"] .header-cta {
+  gap: var(--s3);
+}
+html[lang="ka"] .desktop-nav {
+  gap: 20px;
+}
+.language-switcher {
+  margin-left: var(--s4);
+}
+.language-switcher select {
+  min-height: 44px;
+  min-width: 66px;
+  padding: var(--s2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--green);
+  background: var(--ivory);
+  font-family: var(--font-body), sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+html:not([lang="en"]) .hero-content {
+  padding-top: var(--s16);
+}
+html:not([lang="en"]) .hero-actions {
+  flex-wrap: wrap;
+}
+html:not([lang="en"]) .region-bottom {
+  flex-wrap: wrap;
+}
+html:not([lang="en"]) .photo-caption h3 {
+  max-width: calc(100% - 52px);
+}
+html:not([lang="en"]) .inquiry-layout > *,
+html:not([lang="en"]) .region-layout > *,
+html:not([lang="en"]) .service-layout > * {
+  min-width: 0;
+}
+/* Collapse before translated labels can wrap or collide. */
+.header-inner {
+  gap: var(--s4);
+}
+.header-inner > .brand,
+.header-cta,
+.language-switcher {
+  flex-shrink: 0;
+}
+.desktop-nav a,
+.header-cta {
+  white-space: nowrap;
+}
+.mobile-nav {
+  display: none;
+}
+@media (max-width: 1100px) {
+  .desktop-nav,
+  .header-cta {
+    display: none;
+  }
+  .language-switcher {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .menu-toggle {
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: none;
+    padding: 0;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .mobile-nav {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--ivory);
+    padding: var(--s2) var(--s6) var(--s6);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 20px 24px rgba(16, 34, 31, 0.12);
+  }
+  .mobile-nav a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 52px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+}
+@media (max-width: 760px) {
+  .header-cta {
+    display: none;
+  }
+  .language-switcher {
+    margin-left: auto;
+    margin-right: var(--s4);
+  }
+  .language-switcher select {
+    font-size: 16px;
+  }
+  html[lang="ru"] .hero h1 {
+    font-size: clamp(38px, 10.5vw, 65px);
+  }
+  html[lang="ka"] .hero h1 {
+    font-size: clamp(25px, 6.8vw, 42px);
+    line-height: 1.4;
+  }
+  html:not([lang="en"]) .hero-content {
+    padding-top: var(--s12);
+  }
+  html:not([lang="en"]) .hero {
+    min-height: 690px;
+    height: auto;
+    padding-bottom: 240px;
+  }
+  html:not([lang="en"]) .hero-actions {
+    gap: var(--s4);
+  }
+  html[lang="ka"] .hero-actions .button,
+  html[lang="ru"] .hero-actions .button {
+    font-size: 12px;
+  }
+  html[lang="ka"] .hero-secondary {
+    font-size: 11px;
+  }
+  html[lang="ka"] h2,
+  html[lang="ka"] .about-layout h2 {
+    font-size: 29px;
+  }
+  html[lang="ka"] .inquiry-intro h2 {
+    font-size: 33px;
+  }
+  html[lang="ru"] .inquiry-intro h2 {
+    font-size: 44px;
+  }
+  html[lang="ka"] .dealer-hero h1 {
+    font-size: 34px;
+  }
+  html[lang="ru"] .dealer-hero h1 {
+    font-size: 49px;
+  }
+  html[lang="ka"] .origin-inner > a {
+    font-size: 18px;
+    padding-inline: var(--s2);
+  }
+  html[lang="ka"] .origin-inner > a:nth-child(2) {
+    padding-left: 0;
+  }
+  html[lang="ka"] .region-tabs button {
+    font-size: 18px;
+  }
+  html[lang="ka"] .region-tabs {
+    gap: var(--s3);
+  }
+  html:not([lang="en"]) .process-grid {
+    gap: var(--s8) var(--s4);
+  }
+  html[lang="ka"] .process-grid h3 {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+  html:not([lang="en"]) .experience {
+    gap: var(--s4);
+  }
+  html[lang="ka"] .experience p {
+    font-size: 11px;
+  }
+  html[lang="ka"] .inquiry-promise {
+    align-items: flex-start;
+  }
+  html[lang="ka"] .audience-toggle > label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

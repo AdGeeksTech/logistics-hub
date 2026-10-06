@@ -1,3 +1,4 @@
+import { translator, localizedPath, type Locale } from "@/lib/i18n";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -37,24 +38,22 @@ const steps = [
     "Support continues until your vehicle is received. Your choice becomes your next drive.",
   ],
 ];
-export default async function Home({
-  searchParams,
+export default function Home({
+  locale = "en",
+  initialRegion = "Not sure yet",
 }: {
-  searchParams: Promise<{ region?: string }>;
+  locale?: Locale;
+  initialRegion?: string;
 }) {
-  const { region } = await searchParams;
-  const initialRegion =
-    region && ["USA", "Europe", "China"].includes(region)
-      ? region
-      : "Not sure yet";
+  const t = translator(locale);
   return (
     <>
-      <Header />
+      <Header locale={locale} />
       <main id="main">
         <section className="hero">
           <Image
             src="/images/hero-porsche.jpg"
-            alt="A dark Porsche travelling on an open road"
+            alt={t("A dark Porsche travelling on an open road")}
             fill
             priority
             sizes="100vw"
@@ -63,51 +62,52 @@ export default async function Home({
           <div className="hero-shade" />
           <div className="container hero-content">
             <h1>
-              YOUR NEXT CAR.
-              <br />A WORLD OF
+              {t("YOUR NEXT CAR.")}
               <br />
-              <span>POSSIBILITIES.</span>
+              {t("A WORLD OF")}
+              <br />
+              <span>{t("POSSIBILITIES.")}</span>
             </h1>
             <p>
-              Vehicles from the USA, Europe and China.
+              {t("Vehicles from the USA, Europe and China.")}
               <br />
-              Expert support from selection to delivery.
+              {t("Expert support from selection to delivery.")}
             </p>
             <div className="hero-actions">
               <a href="#inquiry" className="button button-orange">
-                Find a vehicle
+                {t("Find a vehicle")}
                 <ArrowUpRight size={18} />
               </a>
               <a href="#how-it-works" className="hero-secondary">
-                Discover the process
+                {t("Discover the process")}
                 <ArrowDown size={17} />
               </a>
             </div>
           </div>
           <div className="container hero-bottom">
-            <span>Your choice. Our responsibility.</span>
+            <span>{t("Your choice. Our responsibility.")}</span>
             <span className="hero-coordinate">
-              BASED IN TBILISI. THINKING BEYOND BORDERS.
+              {t("BASED IN TBILISI. THINKING BEYOND BORDERS.")}
             </span>
           </div>
         </section>
         <div className="origin-rail">
           <div className="container origin-inner">
             <span className="origin-label">
-              A world of choice.
+              {t("A world of choice.")}
               <br />
-              <strong>One point of contact.</strong>
+              <strong>{t("One point of contact.")}</strong>
             </span>
             <a href="?region=USA#sourcing">
-              USA
+              {t("USA")}
               <ArrowUpRight />
             </a>
             <a href="?region=Europe#sourcing">
-              EUROPE
+              {t("EUROPE")}
               <ArrowUpRight />
             </a>
             <a href="?region=China#sourcing">
-              CHINA
+              {t("CHINA")}
               <ArrowUpRight />
             </a>
           </div>
@@ -115,33 +115,35 @@ export default async function Home({
         <section id="services" className="section services-section container">
           <div className="section-heading">
             <h2>
-              You choose the vehicle.
+              {t("You choose the vehicle.")}
               <br />
-              We connect the dots.
+              {t("We connect the dots.")}
             </h2>
             <p>
-              From your first shortlist to the final handover, we bring
-              expertise and clarity to every step.
+              {t(
+                "From your first shortlist to the final handover, we bring expertise and clarity to every step.",
+              )}
             </p>
           </div>
           <div className="service-layout">
             <div className="buyer-photo">
               <Image
                 src="/images/vehicle-detail.jpg"
-                alt="A silver sports car in an automotive showroom"
+                alt={t("A silver sports car in an automotive showroom")}
                 fill
                 sizes="(max-width: 760px) 100vw, 50vw"
               />
               <div className="photo-caption">
-                <span>For private buyers</span>
+                <span>{t("For private buyers")}</span>
                 <h3>
-                  A car that’s right for you.
-                  <br />A team that’s on your side.
+                  {t("A car that’s right for you.")}
+                  <br />
+                  {t("A team that’s on your side.")}
                 </h3>
                 <a
                   href="#inquiry"
                   className="round-link"
-                  aria-label="Start a private buyer inquiry"
+                  aria-label={t("Start a private buyer inquiry")}
                 >
                   <ArrowUpRight />
                 </a>
@@ -149,51 +151,55 @@ export default async function Home({
             </div>
             <div className="service-detail">
               <h3>
-                More confidence.
+                {t("More confidence.")}
                 <br />
-                Less guesswork.
+                {t("Less guesswork.")}
               </h3>
               <p>
-                Buying a vehicle abroad should feel exciting. We help you
-                understand the options and make informed decisions.
+                {t(
+                  "Buying a vehicle abroad should feel exciting. We help you understand the options and make informed decisions.",
+                )}
               </p>
               <ul className="check-list">
                 <li>
                   <Check />
-                  Vehicle sourcing tailored to your needs
+                  {t("Vehicle sourcing tailored to your needs")}
                 </li>
                 <li>
                   <Check />
-                  Expert review before auction bidding
+                  {t("Expert review before auction bidding")}
                 </li>
                 <li>
                   <Check />
-                  History checks, including Carfax reports
+                  {t("History checks, including Carfax reports")}
                 </li>
                 <li>
                   <Check />
-                  Documentation and delivery support
+                  {t("Documentation and delivery support")}
                 </li>
               </ul>
               <a className="text-link" href="#inquiry">
-                Let’s find your vehicle
+                {t("Let’s find your vehicle")}
                 <ArrowUpRight size={18} />
               </a>
             </div>
           </div>
-          <Link href="/dealers" className="dealer-strip">
+          <Link
+            href={localizedPath(locale, "/dealers")}
+            className="dealer-strip"
+          >
             <div>
-              <span>Buying for your business?</span>
-              <h3>Your next opportunity starts here.</h3>
+              <span>{t("Buying for your business?")}</span>
+              <h3>{t("Your next opportunity starts here.")}</h3>
             </div>
             <span className="dealer-strip-action">
-              Explore dealer services
+              {t("Explore dealer services")}
               <ArrowUpRight size={21} />
             </span>
           </Link>
         </section>
         <div id="sourcing">
-          <Regions initialRegion={initialRegion} />
+          <Regions locale={locale} initialRegion={initialRegion} />
         </div>
         <section
           className="section process-section container"
@@ -201,30 +207,32 @@ export default async function Home({
         >
           <div className="section-heading">
             <h2>
-              A clear road.
+              {t("A clear road.")}
               <br />
-              From start to finish.
+              {t("From start to finish.")}
             </h2>
             <p>
-              Six steps. One team by your side.
+              {t("Six steps. One team by your side.")}
               <br />
-              We handle the details and keep you in the loop.
+              {t("We handle the details and keep you in the loop.")}
             </p>
           </div>
           <ol className="process-grid">
             {steps.map(([title, description], i) => (
-              <li key={title}>
+              <li key={t(title)}>
                 <span className="step-number">0{i + 1}</span>
-                <h3>{title}</h3>
-                <p>{description}</p>
+                <h3>{t(title)}</h3>
+                <p>{t(description)}</p>
               </li>
             ))}
           </ol>
           <div className="inspection-note">
             <ShieldCheck size={25} />
             <p>
-              <strong>Expert approval comes first.</strong> We review the lot
-              before bidding to help reduce risks and avoid unsuitable vehicles.
+              <strong>{t("Expert approval comes first.")}</strong>{" "}
+              {t(
+                "We review the lot before bidding to help reduce risks and avoid unsuitable vehicles.",
+              )}
             </p>
           </div>
         </section>
@@ -232,21 +240,22 @@ export default async function Home({
           <div className="container about-layout">
             <div>
               <h2>
-                Built on experience.
+                {t("Built on experience.")}
                 <br />
-                Driven by responsibility.
+                {t("Driven by responsibility.")}
               </h2>
               <p>
-                Logistic Hub was founded in Tbilisi by three partners with more
-                than 15 years of experience in the automotive industry.
+                {t(
+                  "Logistic Hub was founded in Tbilisi by three partners with more than 15 years of experience in the automotive industry.",
+                )}
               </p>
               <p>
-                We bring that hands-on knowledge to every vehicle search. As an
-                independent company, we put transparency, personal support and
-                consistent communication at the heart of what we do.
+                {t(
+                  "We bring that hands-on knowledge to every vehicle search. As an independent company, we put transparency, personal support and consistent communication at the heart of what we do.",
+                )}
               </p>
               <a className="text-link" href="#inquiry">
-                Meet your next automotive partner
+                {t("Meet your next automotive partner")}
                 <ArrowUpRight size={18} />
               </a>
             </div>
@@ -256,27 +265,28 @@ export default async function Home({
                   15<span>+</span>
                 </span>
                 <p>
-                  years of automotive experience
+                  {t("years of automotive experience")}
                   <br />
-                  among our founders
+                  {t("among our founders")}
                 </p>
               </div>
               <div className="partner">
-                <span>Logistics in trusted hands</span>
+                <span>{t("Logistics in trusted hands")}</span>
                 <strong>
                   LION TRANS
                   <ArrowRight size={23} />
                 </strong>
                 <p>
-                  Our logistics partner, helping connect your vehicle’s origin
-                  to its destination.
+                  {t(
+                    "Our logistics partner, helping connect your vehicle’s origin to its destination.",
+                  )}
                 </p>
               </div>
             </div>
           </div>
         </section>
         <section className="auction-section container">
-          <p>Dealer access to leading US auctions</p>
+          <p>{t("Dealer access to leading US auctions")}</p>
           <div className="auction-names">
             <span>
               Copart<span className="auction-dot">●</span>
@@ -287,22 +297,22 @@ export default async function Home({
             <span className="manheim">Manheim</span>
             <span>ADESA</span>
           </div>
-          <Link href="/dealers" className="text-link">
-            Find out more
+          <Link href={localizedPath(locale, "/dealers")} className="text-link">
+            {t("Find out more")}
             <ArrowUpRight size={16} />
           </Link>
         </section>
         <section className="faq-section section container">
           <div>
             <h2>
-              A few things
+              {t("A few things")}
               <br />
-              worth knowing.
+              {t("worth knowing.")}
             </h2>
             <p>
-              Every vehicle is different.
+              {t("Every vehicle is different.")}
               <br />
-              We’ll help you understand yours.
+              {t("We’ll help you understand yours.")}
             </p>
           </div>
           <div className="faq-list">
@@ -324,17 +334,18 @@ export default async function Home({
                 "Costs and timelines depend on the vehicle, its location and delivery arrangements. A manager will explain the specific costs, payment schedule and expected timeline for your inquiry.",
               ],
             ].map(([q, a]) => (
-              <details key={q}>
+              <details key={t(q)}>
                 <summary>
-                  {q}
+                  {t(q)}
                   <span className="faq-plus" aria-hidden="true" />
                 </summary>
-                <p>{a}</p>
+                <p>{t(a)}</p>
               </details>
             ))}
           </div>
         </section>
         <Inquiry
+          locale={locale}
           initialRegion={initialRegion}
           connected={Boolean(
             process.env.RESEND_API_KEY &&
@@ -343,7 +354,7 @@ export default async function Home({
           )}
         />
       </main>
-      <Footer />
+      <Footer locale={locale} />
     </>
   );
 }

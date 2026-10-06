@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         to: [INQUIRY_TO_EMAIL],
         reply_to: email,
         subject: `Logistic Hub: ${audience} inquiry — ${region}`,
-        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "Not provided"}\nRegion: ${region}\nCustomer: ${audience}\n\n${message}`,
+        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "Not provided"}\nRegion: ${region}\nCustomer: ${audience}\nPreferred language: ${["en", "ru", "ka"].includes(val("locale")) ? val("locale") : "en"}\n\n${message}`,
       }),
       signal: AbortSignal.timeout(12000),
     });

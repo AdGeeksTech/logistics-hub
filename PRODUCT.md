@@ -17,6 +17,7 @@ Logistic Hub — Your Choice. Our Responsibility. English-language content.
 ## Capabilities and Constraints
 Expert review of available vehicle information, documentation and history including Carfax before auction bidding. Updates until vehicle delivery. Financial and dealer terms are discussed directly with a manager.
 ## Open decisions
+Auction fee calculator uses official published Copart and IAA schedules. The client's actual auction fee tier, their own service fee or markup, and their shipping tariffs are still to be supplied.
 Inquiry destination and phone requested from user; pending. Do not pretend inquiries have been sent without a configured delivery provider. Imagery is illustrative, not inventory or company photography.
 ## Assumptions
 Primary site conversion is a sourcing inquiry. A single main page with a dedicated dealer page is an implementation choice inferred from the content package.
