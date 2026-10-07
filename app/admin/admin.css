@@ -225,6 +225,8 @@ body.admin h2 {
 }
 .admin-login-top {
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--s4);
@@ -351,7 +353,7 @@ body.admin h2 {
 }
 .admin-search {
   position: relative;
-  width: min(100%, 360px);
+  width: min(100%, 420px);
 }
 .admin-search svg {
   position: absolute;
@@ -419,7 +421,8 @@ body.admin h2 {
   min-width: 140px;
   min-height: 40px;
   margin: 0;
-  padding: 6px 10px;
+  padding: 6px 32px 6px 10px;
+  background-position: right 10px center;
   font-size: 13px;
   font-weight: 700;
 }
@@ -476,9 +479,41 @@ body.admin h2 {
 /* Bottom-aligned so a label that wraps keeps its input in line. */
 .field-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
   gap: var(--s4) var(--s6);
   align-items: end;
+}
+/* A row of radio options spanning the whole grid; labels wrap. */
+.choice-field {
+  grid-column: 1 / -1;
+}
+.choice-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: var(--s2);
+  margin-top: var(--s2);
+}
+.choice-options label {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 46px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-weight: 400;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.choice-options label.selected {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 1px var(--navy);
+}
+.choice-options input {
+  flex-shrink: 0;
+}
+.choice-field[aria-invalid="true"] .choice-options label {
+  border-color: var(--error);
 }
 .field-grid > label.check {
   align-self: end;
@@ -486,7 +521,7 @@ body.admin h2 {
 }
 .feature-picker {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
   gap: var(--s6);
 }
 .feature-picker legend {
@@ -586,7 +621,7 @@ body.admin h2 {
 /* Photos */
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
   gap: var(--s3);
   margin: 0 0 var(--s4);
   padding: 0;
@@ -770,9 +805,6 @@ body.admin h2 {
   margin: 0;
   padding-left: 36px;
 }
-.texts-section-select {
-  display: none !important;
-}
 .texts-sections ul {
   display: grid;
   gap: 2px;
@@ -935,11 +967,8 @@ body.admin h2 {
   .texts-sections {
     position: static;
   }
-  .texts-sections ul {
+  .texts-sections > ul {
     display: none;
-  }
-  .texts-section-select {
-    display: block !important;
   }
   .text-item {
     grid-template-columns: minmax(0, 1fr);
@@ -953,6 +982,19 @@ body.admin h2 {
   body.admin h1 {
     font-size: 24px;
   }
+  .status-picker small {
+    display: none;
+  }
+  .admin input:not([type="radio"], [type="checkbox"]),
+  .admin select,
+  .admin textarea {
+    font-size: 16px;
+  }
+}
+
+/* The listings table becomes a list of cards where its six columns no
+   longer fit. */
+@media (max-width: 900px) {
   .admin-table thead {
     display: none;
   }
@@ -974,14 +1016,97 @@ body.admin h2 {
     border: 0;
   }
   .admin-table .admin-thumb {
-    grid-row: span 4;
+    grid-row: span 5;
+    width: auto;
   }
-  .status-picker small {
-    display: none;
+  .admin-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    white-space: normal;
   }
-  .admin input:not([type="radio"], [type="checkbox"]),
-  .admin select,
-  .admin textarea {
-    font-size: 16px;
+}
+@media (max-width: 760px) {
+  .admin-card {
+    padding: var(--s4);
+  }
+  .admin-bar-inner,
+  .admin-main {
+    width: calc(100% - 32px);
+  }
+}
+/* Text editor sections: a list beside the texts on wide screens, a
+   disclosure that wraps long section names on narrow ones. */
+.texts-section-menu {
+  display: none;
+}
+.texts-section-menu summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 46px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--muted-line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: pointer;
+  list-style: none;
+}
+.texts-section-menu summary::-webkit-details-marker {
+  display: none;
+}
+.texts-section-menu[open] summary svg {
+  transform: rotate(180deg);
+}
+.texts-section-menu ul {
+  margin-top: var(--s2);
+}
+@media (max-width: 1050px) {
+  .texts-section-menu {
+    display: block;
+  }
+  .texts-section-menu ul {
+    display: grid;
+  }
+}
+
+/* Single-column grids need an explicit column that can shrink: an implicit
+   one grows to its widest content and pushes the page sideways. */
+.admin-page,
+.car-form-main,
+.texts-list,
+.admin-login-card,
+.admin-login-form,
+.side-links,
+.status-picker {
+  grid-template-columns: minmax(0, 1fr);
+}
+/* Same select arrow as the public site (see globals.css). */
+.admin select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2316213a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+.admin-card > .admin-hint {
+  margin-bottom: var(--s4);
+}
+/* Phones: the text editor's actions become equal, full-width buttons. */
+@media (max-width: 760px) {
+  .texts-bar,
+  .texts-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .texts-actions .button {
+    justify-content: center;
+  }
+  .texts-actions .link-button {
+    justify-self: center;
   }
 }

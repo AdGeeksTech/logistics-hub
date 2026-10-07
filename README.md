@@ -21,6 +21,8 @@ npm test
 
 Playwright tests expect the site at `http://localhost:3001`; set `PLAYWRIGHT_BASE_URL` to test another address. Start the server with `npm run dev:e2e`: it uses a local-only admin password and a separate `.data/e2e` folder, which the admin tests need and which keeps test listings out of your own local data. Install the browser with `npx playwright install chromium` if needed. Tests use synthetic data; no real email is sent.
 
+For layout changes, `node scripts/audit-layout.mjs` checks every page in every language at 25 widths for cut-off text, overlaps and misaligned columns (see DESIGN.md → Responsive rules).
+
 Locally the admin works without any database: set `ADMIN_PASSWORD` in `.env.local`, run `npm run dev` and open `/admin`. Listings, edited texts and photos are saved under `.data/` (ignored by git), so nothing local reaches the live site.
 
 ## Admin: car listings and site texts

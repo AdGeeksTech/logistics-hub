@@ -17,7 +17,7 @@
   "Filter by status": "სტატუსით გაფილტვრა",
   "All": "ყველა",
   "Drafts": "მონახაზები",
-  "Search by make, model, VIN or ID": "ძიება მწარმოებლით, მოდელით, VIN-ით ან ID-ით",
+  "Search by make, model, VIN or ID": "მარკა, მოდელი, VIN, ID",
   "Search listings": "განცხადებების ძიება",
   "Photo": "ფოტო",
   "Car": "ავტომობილი",
@@ -100,7 +100,6 @@
   "Discard all unpublished text changes?": "გავაუქმოთ ყველა გამოუქვეყნებელი ცვლილება?",
   "Unpublished changes were discarded.": "გამოუქვეყნებელი ცვლილებები გაუქმდა.",
   "Sections": "სექციები",
-  "Section": "სექცია",
   "Search all texts": "ძიება ყველა ტექსტში",
   "No texts match.": "ტექსტი ვერ მოიძებნა.",
   "Restore the original": "საწყისი ტექსტის დაბრუნება",
@@ -131,7 +130,6 @@
   "Car listing options": "განცხადების ველების ვარიანტები",
   "Car features": "აღჭურვილობის სია",
   "Keep menu labels short: longer ones may not fit in the top menu on smaller screens.": "მენიუს სახელები მოკლე დატოვეთ: გრძელი სახელები მცირე ეკრანებზე ზედა მენიუში შეიძლება ვერ დაეტიოს.",
-  "Choose…": "აირჩიეთ…",
   "Choose where the price applies to publish": "გამოსაქვეყნებლად აირჩიეთ, სად მოქმედებს ფასი",
   "Write in at least one language. Visitors see their own language; if it is missing, English, then whichever is filled in.": "შეავსეთ ერთ ენაზე მაინც. ვიზიტორი ხედავს საკუთარ ენაზე დაწერილ ტექსტს; თუ ის არ არის — ინგლისურს, შემდეგ კი რომელიც შევსებულია."
 }

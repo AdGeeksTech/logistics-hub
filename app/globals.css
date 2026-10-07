@@ -37,6 +37,8 @@ html {
 }
 body {
   margin: 0;
+  /* A word longer than its line breaks instead of running off the edge. */
+  overflow-wrap: break-word;
   background: var(--ivory);
   color: var(--navy);
   font-family: var(--font-body), sans-serif;
@@ -327,7 +329,7 @@ button {
 }
 .origin-inner {
   display: grid;
-  grid-template-columns: 1.1fr 1fr 1fr 1fr;
+  grid-template-columns: minmax(0, 1.1fr) repeat(3, minmax(0, 1fr));
   align-items: center;
   min-height: 114px;
 }
@@ -376,7 +378,7 @@ button {
 }
 .service-layout {
   display: grid;
-  grid-template-columns: 1.06fr 1fr;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
   gap: var(--s16);
   align-items: center;
 }
@@ -517,7 +519,7 @@ button {
 }
 .region-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-bottom: 1px solid var(--muted-line);
   gap: 20px;
 }
@@ -584,7 +586,7 @@ button {
 }
 .process-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 40px 48px;
   list-style: none;
   padding: 0;
@@ -633,7 +635,7 @@ button {
 }
 .about-layout {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: var(--s32);
 }
 .about-layout h2 {
@@ -651,7 +653,7 @@ button {
 }
 .about-proof {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   align-content: center;
 }
 .experience {
@@ -791,7 +793,7 @@ details[open] .faq-plus:after {
 }
 .inquiry-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s24);
 }
 .inquiry-intro h2 {
@@ -831,7 +833,7 @@ details[open] .faq-plus:after {
 }
 .audience-toggle {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   background: var(--ivory);
   padding: 4px;
   border-radius: 4px;
@@ -862,7 +864,7 @@ details[open] .faq-plus:after {
 }
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s6) var(--s4);
   margin-bottom: 20px;
 }
@@ -964,7 +966,7 @@ details[open] .faq-plus:after {
 }
 .footer-links {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px 44px;
   font-size: 12px;
 }
@@ -1004,7 +1006,7 @@ details[open] .faq-plus:after {
 }
 .dealer-hero-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 64px;
   align-items: center;
 }
@@ -1031,7 +1033,7 @@ details[open] .faq-plus:after {
 }
 .dealer-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 64px;
 }
 .dealer-content p {
@@ -1047,7 +1049,7 @@ details[open] .faq-plus:after {
 }
 .calculator-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s16);
   align-items: start;
 }
@@ -1319,7 +1321,7 @@ details[open] .faq-plus:after {
     display: none;
   }
   .origin-inner {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     min-height: 140px;
     padding-block: 20px;
   }
@@ -1358,7 +1360,7 @@ details[open] .faq-plus:after {
     max-width: 300px;
   }
   .service-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .buyer-photo {
@@ -1406,7 +1408,7 @@ details[open] .faq-plus:after {
     padding-block: 64px;
   }
   .region-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .section-copy {
@@ -1426,7 +1428,7 @@ details[open] .faq-plus:after {
     margin-top: 16px;
   }
   .process-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 28px 24px;
   }
   .step-number {
@@ -1452,7 +1454,7 @@ details[open] .faq-plus:after {
     padding-block: 64px;
   }
   .about-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 44px;
   }
   .about-layout h2 {
@@ -1494,7 +1496,7 @@ details[open] .faq-plus:after {
     min-height: 44px;
   }
   .faq-section {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .faq-section > div > p {
@@ -1512,7 +1514,7 @@ details[open] .faq-plus:after {
     padding-block: 64px;
   }
   .inquiry-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .inquiry-intro h2 {
@@ -1529,7 +1531,7 @@ details[open] .faq-plus:after {
     padding: 24px;
   }
   .form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
   .form-wrap input:not([type="radio"]),
@@ -1568,7 +1570,7 @@ details[open] .faq-plus:after {
     margin-bottom: 24px;
   }
   .dealer-hero-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .dealer-hero h1 {
@@ -1581,14 +1583,14 @@ details[open] .faq-plus:after {
     height: 320px;
   }
   .dealer-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .dealer-content p {
     font-size: 13px;
   }
   .calculator-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s8);
   }
   .fee-summary {
@@ -2004,7 +2006,7 @@ html:not([lang="en"]) .service-layout > * {
 }
 .filter-range {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 var(--s2);
   min-width: 0;
   margin: 0;
@@ -2391,7 +2393,7 @@ html:not([lang="en"]) .cars-count {
 }
 .car-key-specs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s3) var(--s4);
   margin: var(--s3) 0 0;
   padding: var(--s4) 0;
@@ -2436,7 +2438,7 @@ html:not([lang="en"]) .cars-count {
 }
 .spec-table {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: var(--s12);
   margin: 0;
 }
@@ -2581,5 +2583,146 @@ html[lang="ka"] .car-detail-body h2 {
   .gallery-thumbs button {
     flex-basis: 72px;
     height: 54px;
+  }
+}
+
+/* Responsive safeguards: text stays whole and aligned at every width, in
+   every language. Checked with scripts/audit-layout.mjs. */
+
+/* Forms switch to one column when their own width cannot fit two fields,
+   whatever the page layout around them. */
+.form-wrap {
+  container-type: inline-size;
+}
+@container (max-width: 420px) {
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.audience-toggle > label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.35;
+}
+.language-switcher select {
+  min-width: 72px;
+}
+html[lang="ka"] .language-switcher select {
+  min-width: 80px;
+}
+.car-key-specs li,
+.spec-table dt {
+  min-width: 0;
+}
+@media (max-width: 1050px) {
+  html[lang="ka"] .dealer-hero h1 {
+    font-size: clamp(30px, 5.4vw, 53px);
+  }
+}
+@media (max-width: 760px) {
+  html[lang="ka"] .dealer-hero h1 {
+    font-size: clamp(26px, 8.6vw, 34px);
+  }
+  html[lang="ru"] .service-detail h3 {
+    font-size: clamp(28px, 9vw, 36px);
+  }
+  html[lang="ka"] .photo-caption h3,
+  html[lang="ka"] .service-detail h3,
+  html[lang="ka"] .dealer-strip h3 {
+    font-size: clamp(20px, 6.6vw, 27px);
+  }
+  .origin-label {
+    flex-wrap: wrap;
+  }
+  .origin-inner > a {
+    font-size: clamp(19px, 7.4vw, 27px);
+    padding-inline: clamp(8px, 3.2vw, 15px);
+  }
+  .auction-names {
+    flex-wrap: wrap;
+    row-gap: 4px;
+    font-size: clamp(17px, 5.6vw, 21px);
+  }
+}
+/* The smallest phones: a slightly smaller logo keeps the header on screen. */
+@media (max-width: 400px) {
+  .header-inner {
+    gap: var(--s2);
+  }
+  .brand > svg {
+    height: 30px;
+  }
+  .language-switcher {
+    margin-right: var(--s1);
+  }
+  .container,
+  .header-inner {
+    width: calc(100% - 32px);
+  }
+}
+
+/* Single-column grids get a column that can shrink (see admin.css). */
+.car-summary,
+.car-detail-body,
+.cars-empty,
+.filter-fields,
+.latest-cars .section-heading {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 1050px) {
+  .filter-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .filter-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* On the narrowest phones the three destinations drop their arrows. */
+@media (max-width: 420px) {
+  .origin-inner > a svg {
+    display: none;
+  }
+}
+@media (min-width: 761px) and (max-width: 1050px) {
+  .footer-top {
+    gap: var(--s8);
+  }
+  .footer-links {
+    gap: var(--s2) var(--s6);
+  }
+}
+/* Selects draw their own arrow, so their text starts exactly where text
+   fields start theirs in every browser. */
+.form-wrap select,
+.filter-fields select,
+.language-switcher select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2316213a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+.language-switcher select {
+  padding-left: 10px;
+  padding-right: 28px;
+  background-position: right 8px center;
+  background-size: 14px;
+}
+.filter-fields select,
+.filter-fields input[type="number"] {
+  font-weight: 400;
+}
+/* Tablets show the newest two cars, so no card sits alone on a row. */
+@media (min-width: 761px) and (max-width: 1050px) {
+  .latest-cars .car-card:nth-child(3) {
+    display: none;
+  }
+  .car-filters .button,
+  .car-filters .filter-fields > .text-link {
+    grid-column: 1 / -1;
   }
 }

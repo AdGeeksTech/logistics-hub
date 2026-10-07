@@ -178,8 +178,7 @@ export function Inquiry({
                   />
                 </label>
                 <label>
-                  {t("Phone")}
-                  <span>{t("(optional)")}</span>
+                  {t("Phone")} <span>{t("(optional)")}</span>
                   <input
                     name="phone"
                     type="tel"

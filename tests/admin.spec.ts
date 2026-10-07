@@ -87,7 +87,7 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
   for (const feature of ["Heated seats", "Panoramic roof", "360° camera"])
     await page.getByLabel(feature).check();
   await page.getByLabel("Price, USD").fill("28500");
-  await page.locator("select[name=priceTerms]").selectOption("cleared");
+  await page.locator("input[name=priceTerms][value=cleared]").check();
   await page.locator("select[name=location]").selectOption("transit");
   await page
     .locator("textarea[lang=en]")

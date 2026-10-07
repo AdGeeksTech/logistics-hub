@@ -236,23 +236,17 @@ export function CarForm({
     key: K,
     label: string,
     options: Record<string, string>,
-    {
-      optional = false,
-      translate = true,
-      empty = "Not specified",
-    }: { optional?: boolean; translate?: boolean; empty?: string } = {},
+    { optional = false, translate = true } = {},
   ) => (
     <label>
       {t(label)}
-      {optional && empty === "Not specified" && (
-        <span className="optional"> {t("(optional)")}</span>
-      )}
+      {optional && <span className="optional"> {t("(optional)")}</span>}
       <select
         {...field(key as keyof FieldErrors)}
         value={(state[key] as string | null) ?? ""}
         onChange={(e) => set(key, (e.target.value || null) as FormState[K])}
       >
-        {optional && <option value="">{t(empty)}</option>}
+        {optional && <option value="">{t("Not specified")}</option>}
         {Object.entries(options).map(([value, name]) => (
           <option key={value} value={value}>
             {translate ? t(name) : name}
@@ -403,10 +397,7 @@ export function CarForm({
           <h2>{t("Price and location")}</h2>
           <div className="field-grid">
             {number("price", "Price, USD")}
-            {select("priceTerms", "Price terms", priceTermsOptions, {
-              optional: true,
-              empty: "Choose…",
-            })}
+            {select("location", "Location", locations)}
             <label className="check">
               <input
                 type="checkbox"
@@ -415,7 +406,37 @@ export function CarForm({
               />
               {t("Price is negotiable")}
             </label>
-            {select("location", "Location", locations)}
+            {/* Radio buttons rather than a select: the options are long and
+                must wrap on phones, and this choice is never defaulted. */}
+            <fieldset
+              className="choice-field"
+              aria-invalid={Boolean(errors.priceTerms)}
+              aria-describedby={
+                errors.priceTerms ? "priceTerms-error" : undefined
+              }
+            >
+              <legend>{t("Price terms")}</legend>
+              <div className="choice-options">
+                {Object.entries(priceTermsOptions).map(([value, name]) => (
+                  <label
+                    key={value}
+                    className={state.priceTerms === value ? "selected" : ""}
+                  >
+                    <input
+                      type="radio"
+                      name="priceTerms"
+                      value={value}
+                      checked={state.priceTerms === value}
+                      onChange={() =>
+                        set("priceTerms", value as FormState["priceTerms"])
+                      }
+                    />
+                    {t(name)}
+                  </label>
+                ))}
+              </div>
+              {err("priceTerms")}
+            </fieldset>
           </div>
         </section>
         <section className="admin-card">

@@ -1,6 +1,13 @@
 "use client";
-import { useEffect, useMemo, useState, useTransition } from "react";
-import { Eye, LoaderCircle, RotateCcw, Search, Upload } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  ChevronDown,
+  Eye,
+  LoaderCircle,
+  RotateCcw,
+  Search,
+  Upload,
+} from "lucide-react";
 import { discardTexts, publishTexts, saveTexts } from "@/app/admin/actions";
 import { adminTranslator, type AdminLang } from "@/lib/admin-i18n";
 import { defaultText, type Locale } from "@/lib/i18n";
@@ -153,6 +160,30 @@ export function TextsEditor({
         }).length,
       0,
     );
+  const sectionMenu = useRef<HTMLDetailsElement>(null);
+  const sectionList = () => (
+    <ul>
+      {textSections.map((s, i) => {
+        const count = sectionChanges(s.keys);
+        return (
+          <li key={s.title}>
+            <button
+              type="button"
+              aria-current={!search && i === section}
+              onClick={() => {
+                setSection(i);
+                setQuery("");
+                if (sectionMenu.current) sectionMenu.current.open = false;
+              }}
+            >
+              {t(s.title)}
+              {count > 0 && <span>{count}</span>}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
   const previewBase = lang === "ka" ? "/ka" : "";
   const previewTarget = previewPath(visible[0]?.title ?? "");
 
@@ -240,41 +271,20 @@ export function TextsEditor({
               aria-label={t("Search all texts")}
             />
           </label>
-          <select
-            className="texts-section-select"
-            value={section}
-            aria-label={t("Section")}
-            onChange={(e) => {
-              setSection(Number(e.target.value));
-              setQuery("");
-            }}
-          >
-            {textSections.map((s, i) => (
-              <option key={s.title} value={i}>
-                {t(s.title)}
-              </option>
-            ))}
-          </select>
-          <ul>
-            {textSections.map((s, i) => {
-              const count = sectionChanges(s.keys);
-              return (
-                <li key={s.title}>
-                  <button
-                    type="button"
-                    aria-current={!search && i === section}
-                    onClick={() => {
-                      setSection(i);
-                      setQuery("");
-                    }}
-                  >
-                    {t(s.title)}
-                    {count > 0 && <span>{count}</span>}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          {/* Phones and tablets: the section list folds into a menu whose
+              summary can wrap long section names. */}
+          <details className="texts-section-menu" ref={sectionMenu}>
+            <summary>
+              <span>
+                {search
+                  ? t("Search all texts")
+                  : t(textSections[section].title)}
+              </span>
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
+            {sectionList()}
+          </details>
+          {sectionList()}
         </nav>
         <div className="texts-list">
           {visible.length === 0 && (
