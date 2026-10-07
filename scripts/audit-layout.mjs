@@ -4,11 +4,15 @@
 // grids whose columns should be equal but are not.
 //
 // Run against `npm run dev:e2e` (it signs in to the admin with that
-// server's local password): node scripts/audit-layout.mjs [baseURL]
+// server's local password): node scripts/audit-layout.mjs [baseURL] [--public]
 import { chromium } from "@playwright/test";
 import { writeFileSync } from "node:fs";
 
-const base = process.argv[2] || "http://localhost:3001";
+// --public skips the admin, e.g. to check a live deployment.
+const publicOnly = process.argv.includes("--public");
+const base =
+  process.argv.slice(2).find((a) => !a.startsWith("--")) ||
+  "http://localhost:3001";
 const password = "local-e2e-only-password";
 // prettier-ignore
 const widths = [320, 360, 375, 390, 414, 480, 540, 600, 680, 760, 761, 820,
@@ -313,6 +317,7 @@ for (const lang of ["", "/ru", "/ka"]) {
     `public${lang || "/en"} gallery`,
     lang + "/cars/1",
     async (page) => {
+      if (!(await page.locator(".gallery-expand").count())) return; // no cars yet
       if (!(await page.locator(".gallery-dialog[open]").count()))
         await page.locator(".gallery-expand").click();
     },
@@ -320,39 +325,46 @@ for (const lang of ["", "/ru", "/ka"]) {
 }
 
 // Admin, in Georgian and English.
-const signedOut = await browser.newContext();
-await run(signedOut, "admin/ka", "/admin/login");
-await run(signedOut, "admin/ka error", "/admin/login", async (page) => {
-  if (await page.locator(".admin-error").count()) return;
-  await page.locator("input[name=password]").fill("wrong");
-  await page.locator("input[name=password]").press("Enter");
-  await page.locator(".admin-error").waitFor();
-});
-for (const lang of ["ka", "en"]) {
-  const admin = await browser.newContext();
-  await admin.addCookies([{ name: "lh_admin_lang", value: lang, url: base }]);
-  const login = await admin.newPage();
-  await login.goto(base + "/admin/login");
-  await login.locator("input[name=password]").fill(password);
-  await login.locator("input[name=password]").press("Enter");
-  await login.waitForURL(/\/admin\/cars$/);
-  await login.close();
-  for (const path of [
-    "/admin/cars",
-    "/admin/cars/new",
-    "/admin/cars/1",
-    "/admin/cars/2",
-    "/admin/texts",
-  ])
-    await run(admin, `admin/${lang}`, path);
-  await run(admin, `admin/${lang} errors`, "/admin/cars/new", async (page) => {
-    if (await page.locator(".field-error").count()) return;
-    await page
-      .locator("input[name=status][value=available]")
-      .check({ force: true });
-    await page.locator(".car-form button.button:visible").first().click();
-    await page.locator(".field-error").first().waitFor();
+if (!publicOnly) {
+  const signedOut = await browser.newContext();
+  await run(signedOut, "admin/ka", "/admin/login");
+  await run(signedOut, "admin/ka error", "/admin/login", async (page) => {
+    if (await page.locator(".admin-error").count()) return;
+    await page.locator("input[name=password]").fill("wrong");
+    await page.locator("input[name=password]").press("Enter");
+    await page.locator(".admin-error").waitFor();
   });
+  for (const lang of ["ka", "en"]) {
+    const admin = await browser.newContext();
+    await admin.addCookies([{ name: "lh_admin_lang", value: lang, url: base }]);
+    const login = await admin.newPage();
+    await login.goto(base + "/admin/login");
+    await login.locator("input[name=password]").fill(password);
+    await login.locator("input[name=password]").press("Enter");
+    await login.waitForURL(/\/admin\/cars$/);
+    await login.close();
+    for (const path of [
+      "/admin/cars",
+      "/admin/cars/new",
+      "/admin/cars/1",
+      "/admin/cars/2",
+      "/admin/texts",
+    ])
+      await run(admin, `admin/${lang}`, path);
+    await run(
+      admin,
+      `admin/${lang} errors`,
+      "/admin/cars/new",
+      async (page) => {
+        if (await page.locator(".field-error").count()) return;
+        await page
+          .locator("input[name=status][value=available]")
+          .check({ force: true });
+        await page.locator(".car-form button.button:visible").first().click();
+        await page.locator(".field-error").first().waitFor();
+      },
+    );
+  }
 }
 await browser.close();
 
