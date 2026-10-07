@@ -25,7 +25,6 @@
   "Status": "სტატუსი",
   "Updated": "განახლდა",
   "Actions": "მოქმედებები",
-  "photos": "ფოტო",
   "Edit": "რედაქტირება",
   "View": "ნახვა",
   "No listings match.": "განცხადება ვერ მოიძებნა.",
@@ -46,7 +45,6 @@
   "Price terms": "ფასის პირობები",
   "Price is negotiable": "ფასი შეთანხმებით",
   "Not specified": "არ არის მითითებული",
-  "Write in at least one language. Visitors see their own language, or Georgian when it is missing.": "შეავსეთ ერთ ენაზე მაინც. ვიზიტორი ხედავს საკუთარ ენაზე დაწერილ ტექსტს, ხოლო თუ ის არ არის — ქართულს.",
   "Only admins can see it.": "ჩანს მხოლოდ ადმინისტრატორებისთვის.",
   "Visible on the site.": "ჩანს საიტზე.",
   "Visible on the site, marked as reserved.": "ჩანს საიტზე, დაჯავშნილის ნიშნით.",
@@ -134,5 +132,6 @@
   "Car features": "აღჭურვილობის სია",
   "Keep menu labels short: longer ones may not fit in the top menu on smaller screens.": "მენიუს სახელები მოკლე დატოვეთ: გრძელი სახელები მცირე ეკრანებზე ზედა მენიუში შეიძლება ვერ დაეტიოს.",
   "Choose…": "აირჩიეთ…",
-  "Choose where the price applies to publish": "გამოსაქვეყნებლად აირჩიეთ, სად მოქმედებს ფასი"
+  "Choose where the price applies to publish": "გამოსაქვეყნებლად აირჩიეთ, სად მოქმედებს ფასი",
+  "Write in at least one language. Visitors see their own language; if it is missing, English, then whichever is filled in.": "შეავსეთ ერთ ენაზე მაინც. ვიზიტორი ხედავს საკუთარ ენაზე დაწერილ ტექსტს; თუ ის არ არის — ინგლისურს, შემდეგ კი რომელიც შევსებულია."
 }

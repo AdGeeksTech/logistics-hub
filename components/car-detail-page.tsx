@@ -43,7 +43,8 @@ export function specRows(
     ["Fuel type", t(fuelTypes[l.fuel])],
     [
       "Engine volume",
-      l.engineVolume !== null && `${l.engineVolume.toFixed(1)} ${t("L")}`,
+      l.engineVolume !== null &&
+        `${groupDigits(l.engineVolume, locale)}${Number.isInteger(l.engineVolume) ? (locale === "en" ? ".0" : ",0") : ""} ${t("L")}`,
     ],
     ["Cylinders", l.cylinders],
     ["Power", l.powerHp !== null && `${n(l.powerHp)} ${t("hp")}`],

@@ -252,9 +252,10 @@ export function listingIdFromSlug(slug: string) {
   const match = /^(\d{1,9})(?:-|$)/.exec(slug);
   return match ? Number(match[1]) : null;
 }
+// The visitor's language, then English, then whichever was written.
 export function listingDescription(listing: Listing, locale: Locale) {
   const text = listing.description;
-  return text[locale] || text.ka || text.en || text.ru || "";
+  return text[locale] || text.en || text.ka || text.ru || "";
 }
 
 export function emptyListing(): ListingFields {

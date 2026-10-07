@@ -69,11 +69,14 @@ export function TextsEditor({
     ? textSections
         .map((s) => ({
           ...s,
+          // Matches the current and the original wording, so a text
+          // stays in view while it is being edited.
           keys: s.keys.filter((key) =>
             fieldLocales.some(([locale]) =>
-              (edits[id(locale, key)] ?? saved(locale, key))
-                .toLowerCase()
-                .includes(search),
+              [
+                edits[id(locale, key)] ?? saved(locale, key),
+                defaultText(locale, key),
+              ].some((text) => text.toLowerCase().includes(search)),
             ),
           ),
         }))

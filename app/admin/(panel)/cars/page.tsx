@@ -125,7 +125,8 @@ export default async function CarListingsAdmin({
                   </Link>
                   <span className="admin-sub">
                     ID {l.id}
-                    {l.trim && ` · ${l.trim}`} · {l.photos.length} {t("photos")}
+                    {l.trim && ` · ${l.trim}`} · {t("Photos")}:{" "}
+                    {l.photos.length}
                   </span>
                 </td>
                 <td>{l.price === null ? "—" : money(l.price, "en")}</td>

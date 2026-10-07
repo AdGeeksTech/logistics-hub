@@ -78,9 +78,9 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
   await page.getByLabel("Version / trim").fill("Excellence AWD");
   await page.getByLabel("Year").fill("2024");
   await page.locator("select[name=body]").selectOption("sedan");
-  await page.getByLabel("Mileage, km").fill("12000");
+  await page.getByLabel("Mileage, km").fill("12 000");
   await page.getByLabel("Power, hp").fill("530");
-  await page.getByLabel("Battery capacity, kWh").fill("82.5");
+  await page.getByLabel("Battery capacity, kWh").fill("82,5");
   await page.getByLabel("Electric range, km").fill("580");
   await page.locator("select[name=drive]").selectOption("awd");
   await page.locator("select[name=color]").selectOption("blue");

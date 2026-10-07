@@ -15,9 +15,10 @@ const sign = (value: string) =>
 const digest = (value: string) => createHash("sha256").update(value).digest();
 const same = (a: string, b: string) => timingSafeEqual(digest(a), digest(b));
 
+// Surrounding spaces are ignored: they sneak in when a password is copied.
 export function passwordMatches(input: string) {
-  const password = process.env.ADMIN_PASSWORD;
-  return Boolean(password) && same(input, password!);
+  const password = process.env.ADMIN_PASSWORD?.trim();
+  return Boolean(password) && same(input.trim(), password!);
 }
 
 function validSession(value: string | undefined) {

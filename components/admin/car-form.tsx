@@ -61,9 +61,19 @@ const hasBattery = [...electricRange, "hybrid"];
 // type, so an EV never shows an engine volume left over from editing.
 function toPayload(state: FormState) {
   const payload: Record<string, unknown> = { ...state };
-  for (const key of numberFields)
+  // Accepts "29 900", "29,900" and "1,5": spaces and thousands separators
+  // are dropped, and a lone comma before one or two digits is a decimal.
+  for (const key of numberFields) {
+    const text = state[key].replace(/[\s\u00a0']/g, "");
     payload[key] =
-      state[key].trim() === "" ? null : Number(state[key].replace(",", "."));
+      text === ""
+        ? null
+        : Number(
+            /^\d+,\d{1,2}$/.test(text)
+              ? text.replace(",", ".")
+              : text.replace(/,/g, ""),
+          );
+  }
   if (state.fuel === "electric")
     payload.engineVolume = payload.cylinders = null;
   if (!hasBattery.includes(state.fuel)) payload.batteryKwh = null;
@@ -122,11 +132,13 @@ export function CarForm({
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setState((s) => ({ ...s, [key]: value }));
     setDirty(true);
+    setFlash(null);
     clearError(key as keyof FieldErrors);
   }
   const setPhotos = (update: (photos: Photo[]) => Photo[]) => {
     setState((s) => ({ ...s, photos: update(s.photos) }));
     setDirty(true);
+    setFlash(null);
     clearError("photos");
   };
 
@@ -200,17 +212,19 @@ export function CarForm({
   const number = (
     key: NumberField,
     label: string,
-    { required = false, step = 1, min = 0 } = {},
+    { required = false, step = 1 } = {},
   ) => (
     <label>
       {t(label)}
       {!required && <span className="optional"> {t("(optional)")}</span>}
+      {/* Text, not type="number": browsers silently drop "1,5" or "29 900"
+          from number fields. The value is parsed on save and checked on the
+          server. */}
       <input
         {...field(key)}
-        type="number"
+        type="text"
         inputMode={step < 1 ? "decimal" : "numeric"}
-        step={step}
-        min={min}
+        autoComplete="off"
         required={required}
         value={state[key]}
         onChange={(e) => set(key, e.target.value)}
@@ -304,7 +318,7 @@ export function CarForm({
             </datalist>
             {text("model", "Model", { required: true, autoComplete: "off" })}
             {text("trim", "Version / trim", { placeholder: "Long Range AWD" })}
-            {number("year", "Year", { required: true, min: 1980 })}
+            {number("year", "Year", { required: true })}
             {select("body", "Body type", bodyTypes)}
             {toggle("condition", "Condition", conditions)}
             {number("mileage", "Mileage, km", { required: true })}
@@ -343,7 +357,7 @@ export function CarForm({
               optional: true,
               translate: false,
             })}
-            {number("seats", "Seats", { min: 1 })}
+            {number("seats", "Seats")}
             {toggle("steering", "Steering wheel", steeringSides)}
             {select("color", "Color", colors, { optional: true })}
             {select("interiorColor", "Interior color", colors, {
@@ -388,7 +402,7 @@ export function CarForm({
         <section className="admin-card">
           <h2>{t("Price and location")}</h2>
           <div className="field-grid">
-            {number("price", "Price, USD", { min: 1 })}
+            {number("price", "Price, USD")}
             {select("priceTerms", "Price terms", priceTermsOptions, {
               optional: true,
               empty: "Choose…",
@@ -408,7 +422,7 @@ export function CarForm({
           <h2>{t("Description")}</h2>
           <p className="admin-hint">
             {t(
-              "Write in at least one language. Visitors see their own language, or Georgian when it is missing.",
+              "Write in at least one language. Visitors see their own language; if it is missing, English, then whichever is filled in.",
             )}
           </p>
           {(
