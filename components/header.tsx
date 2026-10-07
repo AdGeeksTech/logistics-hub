@@ -1,11 +1,12 @@
 "use client";
-import { translator, localizedPath, type Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import { useT } from "@/components/texts-provider";
 import Link from "next/link";
 import { LanguageSwitcher } from "./language-switcher";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 export function Brand({ locale = "en" }: { locale?: Locale }) {
-  const t = translator(locale);
+  const t = useT(locale);
   return (
     <Link
       href={localizedPath(locale, "/")}
@@ -56,13 +57,16 @@ const wordmark: [number, string][] = [
   [17820.9, "M1582 315Q1582 267 1565.5 212.0Q1549 157 1511.5 110.0Q1474 63 1414.0 31.5Q1354 0 1267 0H280Q252 0 228.0 10.0Q204 20 186.5 37.5Q169 55 159.0 79.0Q149 103 149 131V1303Q149 1330 159.0 1354.0Q169 1378 186.5 1396.0Q204 1414 228.0 1424.0Q252 1434 280 1434H1150Q1198 1434 1253.0 1417.0Q1308 1400 1355.5 1362.5Q1403 1325 1434.5 1265.0Q1466 1205 1466 1118V1069Q1466 1000 1443.0 920.5Q1420 841 1369 770Q1413 743 1451.5 705.0Q1490 667 1519.0 617.0Q1548 567 1565.0 504.0Q1582 441 1582 365ZM1322 365Q1322 416 1306.0 456.5Q1290 497 1261.0 526.0Q1232 555 1191.0 570.5Q1150 586 1099 586H513V848H982Q1033 848 1074.0 863.5Q1115 879 1144.0 908.0Q1173 937 1188.5 977.5Q1204 1018 1204 1069V1118Q1204 1174 1150 1174H409V260H1267Q1274 260 1284.0 261.0Q1294 262 1302.0 267.0Q1310 272 1316.0 284.0Q1322 296 1322 317Z"],
 ];
 export function Header({ locale = "en" }: { locale?: Locale }) {
-  const t = translator(locale);
+  const t = useT(locale);
   const [open, setOpen] = useState(false);
   useEffect(() => {
     function close(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
     }
-    const desktop = window.matchMedia("(min-width: 1201px)");
+    // Matches the CSS: Georgian collapses the menu below 1361px.
+    const desktop = window.matchMedia(
+      `(min-width: ${locale === "ka" ? 1361 : 1201}px)`,
+    );
     function closeOnDesktop() {
       if (desktop.matches) setOpen(false);
     }
@@ -72,12 +76,15 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
       desktop.removeEventListener("change", closeOnDesktop);
       document.removeEventListener("keydown", close);
     };
-  }, []);
+  }, [locale]);
   return (
     <header className="site-header">
       <div className="header-inner">
         <Brand locale={locale} />
         <nav aria-label={t("Main navigation")} className="desktop-nav">
+          <Link href={localizedPath(locale, "/cars")}>
+            {t("Cars from China")}
+          </Link>
           <Link href={localizedPath(locale, "/#services")}>
             {t("Our services")}
           </Link>
@@ -117,6 +124,7 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
           aria-label={t("Mobile navigation")}
         >
           {[
+            ["Cars from China", "/cars"],
             ["Our services", "/#services"],
             ["How it works", "/#how-it-works"],
             ["For dealers", "/dealers"],

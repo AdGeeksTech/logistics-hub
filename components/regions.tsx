@@ -1,5 +1,6 @@
 "use client";
-import { translator, type Locale } from "@/lib/i18n";
+import { type Locale } from "@/lib/i18n";
+import { useT } from "@/components/texts-provider";
 import { useRef, useState } from "react";
 import { ArrowRight, ArrowUpRight, Globe2 } from "lucide-react";
 const regions = [
@@ -35,7 +36,7 @@ export function Regions({
   initialRegion?: string;
   locale?: Locale;
 }) {
-  const t = translator(locale);
+  const t = useT(locale);
   const [active, setActive] = useState(
     Math.max(
       0,

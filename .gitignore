@@ -12,3 +12,4 @@ test-results/
 .site-preview/
 out/
 .vercel
+.data/

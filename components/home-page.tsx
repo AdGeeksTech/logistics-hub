@@ -1,4 +1,5 @@
-import { translator, localizedPath, type Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import { getT } from "@/lib/site-texts";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,6 +13,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Regions } from "@/components/regions";
 import { Inquiry } from "@/components/inquiry";
+import { LatestCars } from "@/components/latest-cars";
 const steps = [
   [
     "Vehicle selection",
@@ -38,14 +40,14 @@ const steps = [
     "Support continues until your vehicle is received. Your choice becomes your next drive.",
   ],
 ];
-export default function Home({
+export default async function Home({
   locale = "en",
   initialRegion = "Not sure yet",
 }: {
   locale?: Locale;
   initialRegion?: string;
 }) {
-  const t = translator(locale);
+  const t = await getT(locale);
   return (
     <>
       <Header locale={locale} />
@@ -198,6 +200,7 @@ export default function Home({
             </span>
           </Link>
         </section>
+        <LatestCars locale={locale} />
         <div id="sourcing">
           <Regions locale={locale} initialRegion={initialRegion} />
         </div>

@@ -99,7 +99,15 @@ test("inquiry endpoint validates payload and never claims success without config
 for (const width of [1440, 390])
   test(`accessibility at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    for (const route of ["/", "/dealers", "/calculator", "/ka/calculator"]) {
+    for (const route of [
+      "/",
+      "/dealers",
+      "/calculator",
+      "/ka/calculator",
+      "/cars",
+      "/ka/cars",
+      "/admin/login",
+    ]) {
       await page.goto(route, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
       const scan = await new AxeBuilder({ page })

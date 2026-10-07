@@ -1,5 +1,6 @@
 "use client";
-import { translator, type Locale } from "@/lib/i18n";
+import { type Locale } from "@/lib/i18n";
+import { useT } from "@/components/texts-provider";
 import { useState } from "react";
 import { ArrowUpRight, Check, Download, LoaderCircle } from "lucide-react";
 type Status = "idle" | "sending" | "sent" | "prepared" | "error";
@@ -8,13 +9,15 @@ export function Inquiry({
   dealer = false,
   connected = false,
   initialRegion = "Not sure yet",
+  initialMessage,
 }: {
   locale?: Locale;
   dealer?: boolean;
   connected?: boolean;
   initialRegion?: string;
+  initialMessage?: string;
 }) {
-  const t = translator(locale);
+  const t = useT(locale);
   const [status, setStatus] = useState<Status>("idle");
   const [region, setRegion] = useState(initialRegion);
   const [audience, setAudience] = useState(dealer ? "Dealer" : "Private buyer");
@@ -208,6 +211,7 @@ export function Inquiry({
                 {t("What are you looking for?")}
                 <textarea
                   name="message"
+                  defaultValue={initialMessage}
                   placeholder={t(
                     "A make and model, your budget, or a link to an auction lot…",
                   )}

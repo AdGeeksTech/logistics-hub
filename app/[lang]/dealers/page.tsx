@@ -1,11 +1,7 @@
 import { notFound } from "next/navigation";
 import Dealers from "@/components/dealer-page";
-import {
-  isLocale,
-  translator,
-  alternatePaths,
-  localizedPath,
-} from "@/lib/i18n";
+import { isLocale, alternatePaths, localizedPath } from "@/lib/i18n";
+import { getT } from "@/lib/site-texts";
 export async function generateMetadata({
   params,
 }: {
@@ -13,7 +9,7 @@ export async function generateMetadata({
 }) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const t = translator(lang);
+  const t = await getT(lang);
   return {
     title: t("For automotive dealers"),
     description: t(

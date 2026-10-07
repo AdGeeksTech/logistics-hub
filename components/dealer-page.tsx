@@ -1,12 +1,13 @@
-import { translator, localizedPath, type Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import { getT } from "@/lib/site-texts";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowUpRight, Check } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Inquiry } from "@/components/inquiry";
-export default function Dealers({ locale = "en" }: { locale?: Locale }) {
-  const t = translator(locale);
+export default async function Dealers({ locale = "en" }: { locale?: Locale }) {
+  const t = await getT(locale);
   return (
     <>
       <Header locale={locale} />

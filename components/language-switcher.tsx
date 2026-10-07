@@ -1,10 +1,11 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { localizedPath, translator, type Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import { useT } from "@/components/texts-provider";
 export function LanguageSwitcher({ locale }: { locale: Locale }) {
   const pathname = usePathname();
   const path = pathname.replace(/^\/(ru|ka)(?=\/|$)/, "") || "/";
-  const t = translator(locale);
+  const t = useT(locale);
   return (
     <label className="language-switcher">
       <span className="sr-only">{t("Language")}</span>

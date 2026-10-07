@@ -1,12 +1,17 @@
-import { translator, localizedPath, type Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import { getT } from "@/lib/site-texts";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Inquiry } from "@/components/inquiry";
 import { FeeCalculator } from "@/components/fee-calculator";
-export default function Calculator({ locale = "en" }: { locale?: Locale }) {
-  const t = translator(locale);
+export default async function Calculator({
+  locale = "en",
+}: {
+  locale?: Locale;
+}) {
+  const t = await getT(locale);
   return (
     <>
       <Header locale={locale} />

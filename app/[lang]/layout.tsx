@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import DocumentLayout, { siteMetadata } from "@/components/document-layout";
 import { isLocale } from "@/lib/i18n";
-export const dynamicParams = false;
+// Unknown languages are rejected below with notFound(). dynamicParams stays
+// on: with it off, Next.js cannot regenerate these pages after site texts
+// are published and answers 404 instead.
 export function generateStaticParams() {
   return [{ lang: "ru" }, { lang: "ka" }];
 }

@@ -16,8 +16,10 @@ Source: /Users/giorgilabauri/Downloads/Logistic Hub - Website Content Package EN
 Logistic Hub — Your Choice. Our Responsibility. English-language content.
 ## Capabilities and Constraints
 Expert review of available vehicle information, documentation and history including Carfax before auction bidding. Updates until vehicle delivery. Financial and dealer terms are discussed directly with a manager.
+## Car listings and self-service
+The client posts cars from China as they secure good offers, aiming at about 100 well-known, popular models first and adding more over time, in a format close to myauto.ge. Staff manage listings and every site text themselves in the password-protected admin; the site does not invent inventory, and listing photos are the client's own.
 ## Open decisions
-Auction fee calculator uses official published Copart and IAA schedules. The client's actual auction fee tier, their own service fee or markup, and their shipping tariffs are still to be supplied.
-Inquiry destination and phone requested from user; pending. Do not pretend inquiries have been sent without a configured delivery provider. Imagery is illustrative, not inventory or company photography.
+Auction fee calculator uses official published Copart and IAA schedules. The client confirmed it adds no markup to auction fees; buyers can check the same figures elsewhere. Their own service fee and shipping tariffs are separate and not shown.
+Inquiry destination and phone requested from user; pending. Do not pretend inquiries have been sent without a configured delivery provider. Site imagery outside car listings is illustrative, not inventory or company photography.
 ## Assumptions
 Primary site conversion is a sourcing inquiry. A single main page with a dedicated dealer page is an implementation choice inferred from the content package.

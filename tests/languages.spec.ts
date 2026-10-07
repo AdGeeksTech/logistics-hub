@@ -56,9 +56,12 @@ for (const [lang, copy] of [
     await expect(
       page.getByRole("radio", { name: copy.Dealer, exact: true }),
     ).toBeChecked();
+    // The switcher works once the page has hydrated.
+    await page.waitForLoadState("networkidle");
     await page.locator(".language-switcher select").selectOption("en");
     await expect(page).toHaveURL(/\/dealers\?region=China#inquiry$/);
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await page.waitForLoadState("networkidle");
     await page.locator(".language-switcher select").selectOption(lang);
     await expect(page).toHaveURL(
       new RegExp(`/${lang}/dealers\\?region=China#inquiry$`),
@@ -78,12 +81,14 @@ test("navigation stays readable while resizing in every language", async ({
   for (const locale of ["en", "ru", "ka"]) {
     await page.goto(locale === "en" ? "/" : `/${locale}`);
     await page.evaluate(() => document.fonts.ready);
+    // Georgian's longer labels collapse the menu earlier.
+    const collapse = locale === "ka" ? 1360 : 1200;
     for (const width of [
-      390, 760, 761, 820, 1024, 1100, 1101, 1200, 1201, 1280, 1440,
+      390, 760, 761, 820, 1024, 1100, 1101, 1200, 1201, 1280, 1360, 1361, 1440,
     ]) {
       await page.setViewportSize({ width, height: 1000 });
       const menu = page.locator(".menu-toggle");
-      if (width <= 1200) {
+      if (width <= collapse) {
         await expect(menu).toBeVisible();
         await expect(page.locator(".desktop-nav")).toBeHidden();
       } else {

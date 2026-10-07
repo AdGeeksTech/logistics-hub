@@ -1,5 +1,6 @@
 "use client";
-import { translator, type Locale } from "@/lib/i18n";
+import { type Locale } from "@/lib/i18n";
+import { useT } from "@/components/texts-provider";
 import {
   auctionFees,
   feeSources,
@@ -8,25 +9,8 @@ import {
   type Title,
 } from "@/lib/auction-fees";
 import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
-// Formatted by hand: Node and browsers ship different ICU data for ka/ru,
-// so Intl output would differ between the server render and hydration.
-function money(value: number, locale: Locale) {
-  const [whole, cents] = value.toFixed(2).split(".");
-  const group = locale === "en" ? "," : " ";
-  const decimal = locale === "en" ? "." : ",";
-  const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, group);
-  return `$${grouped}${cents === "00" ? "" : decimal + cents}`;
-}
-function formatDate(iso: string, locale: Locale) {
-  const [year, month, day] = iso.split("-");
-  // prettier-ignore
-  const months = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
-  return locale === "en"
-    ? `${months[Number(month) - 1]} ${Number(day)}, ${year}`
-    : `${day}.${month}.${year}`;
-}
+import { formatDate, money } from "@/lib/format";
+import { ArrowUpRight, Check } from "lucide-react";
 function Toggle<T extends string>({
   legend,
   name,
@@ -63,7 +47,7 @@ function Toggle<T extends string>({
   );
 }
 export function FeeCalculator({ locale = "en" }: { locale?: Locale }) {
-  const t = translator(locale);
+  const t = useT(locale);
   const [auction, setAuction] = useState<Auction>("Copart");
   const [bid, setBid] = useState("5000");
   const [title, setTitle] = useState<Title>("nonClean");
@@ -147,6 +131,12 @@ export function FeeCalculator({ locale = "en" }: { locale?: Locale }) {
             {t("Enter a winning bid to see the fees.")}
           </p>
         )}
+        <p className="fee-at-cost">
+          <Check size={17} aria-hidden="true" />
+          {t(
+            "These are the auction’s standard fees. Logistic Hub adds no markup to them.",
+          )}
+        </p>
         <p className="fee-note">
           {t(
             "Based on the official standard-vehicle schedule for payment by wire transfer.",

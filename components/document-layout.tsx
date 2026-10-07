@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { translator, type Locale } from "@/lib/i18n";
+import { draftMode } from "next/headers";
+import { type Locale } from "@/lib/i18n";
+import { getT, getTextOverrides } from "@/lib/site-texts";
+import { TextsProvider } from "@/components/texts-provider";
+import { PreviewBanner } from "@/components/preview-banner";
 import "@/app/globals.css";
 const display = localFont({
   src: "../public/fonts/barlow-condensed-600.ttf",
@@ -25,8 +29,9 @@ const cyrillic = localFont({
   display: "swap",
   weight: "200 700",
 });
-export function siteMetadata(locale: Locale): Metadata {
-  const t = translator(locale);
+export const fontClasses = `${display.variable} ${body.variable} ${georgian.variable} ${cyrillic.variable}`;
+export async function siteMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getT(locale);
   return {
     title: {
       default: `Logistic Hub — ${t("Your choice. Our responsibility.")}`,
@@ -37,23 +42,28 @@ export function siteMetadata(locale: Locale): Metadata {
     ),
   };
 }
-export default function DocumentLayout({
+export default async function DocumentLayout({
   children,
   locale,
 }: {
   children: React.ReactNode;
   locale: Locale;
 }) {
-  const t = translator(locale);
+  const [t, overrides, draft] = await Promise.all([
+    getT(locale),
+    getTextOverrides(locale),
+    draftMode(),
+  ]);
   return (
     <html lang={locale} data-scroll-behavior="smooth">
-      <body
-        className={`${display.variable} ${body.variable} ${georgian.variable} ${cyrillic.variable}`}
-      >
+      <body className={fontClasses}>
         <a className="skip-link" href="#main">
           {t("Skip to content")}
         </a>
-        {children}
+        {draft.isEnabled && <PreviewBanner />}
+        <TextsProvider locale={locale} overrides={overrides}>
+          {children}
+        </TextsProvider>
       </body>
     </html>
   );
