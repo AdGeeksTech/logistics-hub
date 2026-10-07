@@ -212,8 +212,18 @@ export function PhotoManager({
           </li>
         ))}
       </ul>
+      {/* The whole box opens the file picker: phones cannot drag. The
+          inner button keeps it reachable by keyboard. */}
       <div
-        className={`photo-drop${dragOver ? " is-over" : ""}`}
+        className={`photo-drop${dragOver ? " is-over" : ""}${enabled ? " is-enabled" : ""}`}
+        onClick={(e) => {
+          if (
+            enabled &&
+            photos.length < maxPhotos &&
+            e.target === e.currentTarget
+          )
+            input.current?.click();
+        }}
         onDragOver={(e) => {
           if (dragged.current !== null || !enabled) return;
           e.preventDefault();

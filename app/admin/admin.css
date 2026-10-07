@@ -50,6 +50,9 @@ body.admin h2 {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+.mobile-save-bar {
+  display: none;
+}
 .admin-bar {
   position: sticky;
   top: 0;
@@ -680,13 +683,24 @@ body.admin h2 {
     border-color 180ms,
     background 180ms;
 }
+.photo-drop.is-enabled {
+  cursor: pointer;
+}
 .photo-drop.is-over {
   border-color: var(--orange);
   background: rgba(239, 106, 58, 0.06);
 }
+.photo-drop p,
+.photo-drop span,
+.photo-drop svg {
+  pointer-events: none;
+}
 .photo-drop p {
   color: var(--navy);
   font-weight: 700;
+}
+.photo-drop p .link-button {
+  pointer-events: auto;
 }
 .photo-drop .link-button {
   font-size: 14px;
@@ -873,14 +887,43 @@ body.admin h2 {
   .texts-layout {
     grid-template-columns: minmax(0, 1fr);
   }
-  .car-form-side {
-    position: sticky;
-    top: auto;
-    bottom: 0;
-    z-index: 5;
+  /* The header and the side panel stop following the scroll, leaving the
+     screen to the form; a fixed bar keeps Save within reach. */
+  .admin-bar {
+    position: static;
   }
-  .car-form-side .admin-card {
-    box-shadow: 0 -8px 24px rgba(14, 21, 39, 0.12);
+  .car-form {
+    padding-bottom: 72px;
+  }
+  .car-form-side {
+    position: static;
+  }
+  .car-form-side .save-button,
+  .car-form-side .save-message {
+    display: none;
+  }
+  .mobile-save-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+    padding: var(--s2) var(--s4) calc(var(--s2) + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 -8px 24px rgba(14, 21, 39, 0.1);
+  }
+  .mobile-save-bar p {
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .mobile-save-bar .button {
+    flex-shrink: 0;
   }
   .status-picker {
     grid-template-columns: repeat(2, minmax(0, 1fr));

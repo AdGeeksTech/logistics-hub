@@ -203,7 +203,7 @@ export type ListingFields = {
   features: string[];
   location: Keys<typeof locations>;
   price: number | null;
-  priceTerms: Keys<typeof priceTermsOptions>;
+  priceTerms: Keys<typeof priceTermsOptions> | null;
   negotiable: boolean;
   description: Partial<Record<Locale, string>>;
   photos: Photo[];
@@ -287,7 +287,7 @@ export function emptyListing(): ListingFields {
     features: [],
     location: "china",
     price: null,
-    priceTerms: "cleared",
+    priceTerms: null,
     negotiable: false,
     description: {},
     photos: [],
@@ -392,7 +392,7 @@ export function parseListing(
       : [],
     location: choice("location", locations)!,
     price: number("price", 1, 10000000, { optional: true }),
-    priceTerms: choice("priceTerms", priceTermsOptions)!,
+    priceTerms: choice("priceTerms", priceTermsOptions, true),
     negotiable: input.negotiable === true,
     description: {},
     photos: [],
@@ -423,6 +423,9 @@ export function parseListing(
       errors.photos = "Add at least one photo to publish";
     if (value.price === null && !errors.price)
       errors.price = "Add a price to publish";
+    // Where the price applies is never guessed for the client.
+    if (value.priceTerms === null && !errors.priceTerms)
+      errors.priceTerms = "Choose where the price applies to publish";
   }
   return Object.keys(errors).length
     ? { ok: false, errors }

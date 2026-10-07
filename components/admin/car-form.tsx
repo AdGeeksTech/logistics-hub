@@ -222,17 +222,23 @@ export function CarForm({
     key: K,
     label: string,
     options: Record<string, string>,
-    { optional = false, translate = true } = {},
+    {
+      optional = false,
+      translate = true,
+      empty = "Not specified",
+    }: { optional?: boolean; translate?: boolean; empty?: string } = {},
   ) => (
     <label>
       {t(label)}
-      {optional && <span className="optional"> {t("(optional)")}</span>}
+      {optional && empty === "Not specified" && (
+        <span className="optional"> {t("(optional)")}</span>
+      )}
       <select
         {...field(key as keyof FieldErrors)}
         value={(state[key] as string | null) ?? ""}
         onChange={(e) => set(key, (e.target.value || null) as FormState[K])}
       >
-        {optional && <option value="">{t("Not specified")}</option>}
+        {optional && <option value="">{t(empty)}</option>}
         {Object.entries(options).map(([value, name]) => (
           <option key={value} value={value}>
             {translate ? t(name) : name}
@@ -383,7 +389,10 @@ export function CarForm({
           <h2>{t("Price and location")}</h2>
           <div className="field-grid">
             {number("price", "Price, USD", { min: 1 })}
-            {select("priceTerms", "Price terms", priceTermsOptions)}
+            {select("priceTerms", "Price terms", priceTermsOptions, {
+              optional: true,
+              empty: "Choose…",
+            })}
             <label className="check">
               <input
                 type="checkbox"
@@ -527,6 +536,26 @@ export function CarForm({
           )}
         </div>
       </aside>
+      {/* Phones and tablets: the side panel moves to the end of the form,
+          so saving stays one tap away in a slim bar. */}
+      <div className="mobile-save-bar">
+        <p role="status" aria-live="polite">
+          {flash ? (
+            <span className={flash.ok ? "is-ok" : "is-error"}>
+              {flash.text}
+            </span>
+          ) : (
+            <span>
+              <strong>{t(statuses[state.status])}</strong>
+              {dirty && ` · ${t("Not saved")}`}
+            </span>
+          )}
+        </p>
+        <button className="button button-orange" disabled={saving}>
+          {t(id === null ? "Save listing" : "Save changes")}
+          {saving && <LoaderCircle className="spin" size={18} />}
+        </button>
+      </div>
     </form>
   );
 }

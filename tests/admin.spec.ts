@@ -64,6 +64,9 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
     page.getByText("Add at least one photo to publish"),
   ).toBeVisible();
   await expect(page.getByText("Add a price to publish")).toBeVisible();
+  await expect(
+    page.getByText("Choose where the price applies to publish"),
+  ).toBeVisible();
 
   await page
     .locator("input[type=file]")
@@ -84,6 +87,7 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
   for (const feature of ["Heated seats", "Panoramic roof", "360° camera"])
     await page.getByLabel(feature).check();
   await page.getByLabel("Price, USD").fill("28500");
+  await page.locator("select[name=priceTerms]").selectOption("cleared");
   await page.locator("select[name=location]").selectOption("transit");
   await page
     .locator("textarea[lang=en]")
@@ -91,7 +95,9 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
   await page.getByRole("button", { name: "Save listing" }).click();
   await expect(page).toHaveURL(/\/admin\/cars\/\d+\?created=1$/);
   await expect(
-    page.getByText("Saved. The listing is live on the site."),
+    page
+      .getByRole("status")
+      .getByText("Saved. The listing is live on the site."),
   ).toBeVisible();
   const id = Number(/cars\/(\d+)/.exec(page.url())![1]);
   expect(await violations(page)).toEqual([]);
@@ -142,7 +148,9 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
   await page.getByRole("radio", { name: /^Reserved/ }).check();
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(
-    page.getByText("Saved. The listing is live on the site."),
+    page
+      .getByRole("status")
+      .getByText("Saved. The listing is live on the site."),
   ).toBeVisible();
   await visitor.goto("/cars");
   await expect(card).toContainText("$27,900");
@@ -151,7 +159,7 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
   // A duplicate starts as a hidden draft that only preview mode shows.
   await page.getByRole("button", { name: "Duplicate as a new draft" }).click();
   await expect(
-    page.getByText("This is a copy saved as a draft."),
+    page.getByRole("status").getByText("This is a copy saved as a draft."),
   ).toBeVisible();
   const copy = Number(/cars\/(\d+)/.exec(page.url())![1]);
   expect(copy).not.toBe(id);

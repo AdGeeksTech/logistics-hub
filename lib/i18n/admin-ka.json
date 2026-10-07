@@ -132,5 +132,7 @@
   "Car page": "ავტომობილის გვერდი",
   "Car listing options": "განცხადების ველების ვარიანტები",
   "Car features": "აღჭურვილობის სია",
-  "Keep menu labels short: longer ones may not fit in the top menu on smaller screens.": "მენიუს სახელები მოკლე დატოვეთ: გრძელი სახელები მცირე ეკრანებზე ზედა მენიუში შეიძლება ვერ დაეტიოს."
+  "Keep menu labels short: longer ones may not fit in the top menu on smaller screens.": "მენიუს სახელები მოკლე დატოვეთ: გრძელი სახელები მცირე ეკრანებზე ზედა მენიუში შეიძლება ვერ დაეტიოს.",
+  "Choose…": "აირჩიეთ…",
+  "Choose where the price applies to publish": "გამოსაქვეყნებლად აირჩიეთ, სად მოქმედებს ფასი"
 }

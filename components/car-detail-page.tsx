@@ -166,9 +166,11 @@ export default async function CarDetailPage({
                   : money(listing.price, locale)}
                 {listing.negotiable && <span>{t("Negotiable")}</span>}
               </p>
-              <p className="car-price-terms">
-                {t(priceTermsOptions[listing.priceTerms])}
-              </p>
+              {listing.priceTerms && (
+                <p className="car-price-terms">
+                  {t(priceTermsOptions[listing.priceTerms])}
+                </p>
+              )}
               <ul className="car-key-specs">
                 <li>
                   <span>{t("Mileage")}</span>
