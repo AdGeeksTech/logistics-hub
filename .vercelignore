@@ -12,3 +12,4 @@ tests
 *.tsbuildinfo
 .env*
 .data
+.claude
