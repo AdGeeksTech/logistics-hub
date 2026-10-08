@@ -23,6 +23,9 @@ test("region keyboard selection prepopulates the inquiry, which is sent", async 
     .fill("Looking for a used estate car from Europe.");
   await page.getByRole("button", { name: "Send inquiry" }).click();
   await expect(page.getByText("Your inquiry is on its way.")).toBeVisible();
+  // The form comes back empty for the next one.
+  await page.getByRole("button", { name: "Send another inquiry" }).click();
+  await expect(page.getByLabel("Full name")).toHaveValue("");
 });
 
 test("mobile menu, dealer page, FAQs and layouts work", async ({ page }) => {

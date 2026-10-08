@@ -110,7 +110,7 @@ export function Inquiry({
                 {t("Our team will contact you using the details you provided.")}
               </p>
               <button className="button" onClick={() => setStatus("idle")}>
-                {t("Prepare another inquiry")}
+                {t("Send another inquiry")}
                 <ArrowUpRight size={17} />
               </button>
             </div>

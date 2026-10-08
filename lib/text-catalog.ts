@@ -178,7 +178,7 @@ export const textSections: { title: string; note?: string; keys: string[] }[] =
         "Clear guidance, from selection to delivery",
         "Your inquiry is on its way.",
         "Our team will contact you using the details you provided.",
-        "Prepare another inquiry",
+        "Send another inquiry",
         "All fields are required unless marked optional.",
         "I’m looking for a vehicle as a",
         "Full name",
