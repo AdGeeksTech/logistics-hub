@@ -62,6 +62,25 @@ export const sitePhotoSlots = {
     builtInFocus: { desktop: "65% 50%", phone: "65% 50%" },
     shade: null,
   },
+  // The image in link previews (WhatsApp, Facebook…), cropped to 1200 × 630
+  // by app/share/[file]/route.ts. Built in: a card per language, made by
+  // scripts/share-images.mjs.
+  share: {
+    title: "Link preview image",
+    where:
+      "Shown when a link to the homepage, the dealers page, the calculator or the car catalogue is shared on WhatsApp, Facebook, Telegram or X. Car pages show the car’s own photo.",
+    advice:
+      "A landscape photo at least 1200 pixels across. It is cropped to 1200 × 630 around the focus point, and some apps trim the edges a little, so keep text away from them.",
+    src: "/images/share/logistic-hub-en.jpg",
+    width: 1200,
+    height: 630,
+    altKey: "Your choice. Our responsibility.",
+    minWidth: 1200,
+    desktop: 1200 / 630,
+    phone: null,
+    builtInFocus: { desktop: "50% 50%", phone: "50% 50%" },
+    shade: null,
+  },
 } as const;
 
 export type SitePhotoSlot = keyof typeof sitePhotoSlots;

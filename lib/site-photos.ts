@@ -37,6 +37,20 @@ const getReplacements = cache(async (): Promise<Replacements> => {
   }
 });
 
+// The replaced link-preview image, if any (drafts in preview mode).
+export async function getSharePhoto() {
+  return (await getReplacements()).share ?? null;
+}
+// The published one, for the image route, which has no preview mode.
+export async function getPublishedSharePhoto() {
+  try {
+    return (await loadPublished()).share ?? null;
+  } catch (error) {
+    console.error("Could not load site photos", error);
+    return null;
+  }
+}
+
 // What a spot shows: the replacement, cropped around its focus point, or
 // the built-in photo with its built-in crop (set in globals.css).
 export async function sitePhoto(

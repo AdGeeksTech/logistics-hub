@@ -1254,6 +1254,35 @@ body.admin h2 {
   width: 55%;
   height: 16%;
 }
+/* The link-preview spot: the image and text as a chat app shows a link. */
+.share-preview {
+  display: grid;
+  gap: var(--s3);
+  max-width: 520px;
+  margin: 0;
+}
+.share-preview .site-photo-frame {
+  border-radius: 8px 8px 0 0;
+}
+.share-preview figcaption {
+  display: grid;
+  gap: 2px;
+  margin-top: calc(var(--s3) * -1);
+  padding: var(--s2) var(--s3) var(--s3);
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.share-preview figcaption small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.share-preview figcaption span {
+  color: var(--muted);
+}
 .site-photo-busy {
   position: absolute;
   inset: 0;

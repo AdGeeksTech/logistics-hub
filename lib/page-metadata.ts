@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { createHash } from "node:crypto";
 import { alternatePaths, locales, localizedPath, type Locale } from "./i18n";
+import { getSharePhoto } from "./site-photos";
 import { getT } from "./site-texts";
 
 type T = (source: string) => string;
@@ -12,9 +14,34 @@ export const siteDescription = (t: T) =>
     "Vehicle sourcing from the USA, Europe and China. Expert inspection, auction access and delivery support for private buyers and automotive dealers in Tbilisi.",
   );
 
+// The preview image: the one chosen in the admin (Site photos), else the
+// built-in card for the language, made by scripts/share-images.mjs.
+async function shareImage(locale: Locale, alt: string) {
+  const photo = await getSharePhoto();
+  if (!photo)
+    return {
+      url: `/images/share/logistic-hub-${locale}.jpg`,
+      width: 1200,
+      height: 630,
+      alt,
+    };
+  // A new name whenever the photo or its crop changes, so apps refetch it.
+  const version = createHash("sha256")
+    .update(`${photo.url} ${photo.focusX} ${photo.focusY}`)
+    .digest("hex")
+    .slice(0, 16);
+  const { alt: described } = photo;
+  return {
+    url: `/share/${version}.jpg`,
+    width: 1200,
+    height: 630,
+    alt:
+      described[locale] || described.en || described.ka || described.ru || alt,
+  };
+}
+
 // A page's language links and the preview shown when it is shared on
-// WhatsApp, Facebook, Telegram or X. The preview images are made by
-// scripts/share-images.mjs; car pages show their first photo instead.
+// WhatsApp, Facebook, Telegram or X. Car pages show their first photo.
 export async function pageMetadata(
   locale: Locale,
   path: string,
@@ -42,14 +69,7 @@ export async function pageMetadata(
       alternateLocale: locales
         .filter((other) => other !== locale)
         .map((other) => ogLocales[other]),
-      images: page.images ?? [
-        {
-          url: `/images/share/logistic-hub-${locale}.jpg`,
-          width: 1200,
-          height: 630,
-          alt: siteTitle(t),
-        },
-      ],
+      images: page.images ?? [await shareImage(locale, siteTitle(t))],
     },
     twitter: { card: "summary_large_image" },
   };

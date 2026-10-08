@@ -1,6 +1,7 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readdirSync } from "node:fs";
+import sharp from "sharp";
 
 // Run against `npm run dev:e2e`, which starts the site with this local-only
 // admin password and a separate data folder, so tests never touch real data.
@@ -49,6 +50,8 @@ test("admin pages, uploads and previews require a session", async ({
 test("password guessing is stopped after ten wrong attempts", async ({
   browser,
 }) => {
+  // Each wrong password waits almost a second on purpose.
+  test.slow();
   // A visitor of its own (by IP address), so other tests are not affected.
   const context = await browser.newContext({
     extraHTTPHeaders: { "x-forwarded-for": `test-${Date.now()}` },
@@ -370,4 +373,49 @@ test("site photos are replaced as drafts, previewed, published and restored", as
     /hero-porsche/,
   );
   await visitor.context().close();
+});
+
+test("the link preview image is replaced, cropped to 1200 × 630 and restored", async ({
+  page,
+  context,
+  request,
+}) => {
+  const before = photoCount();
+  await signIn(page, context);
+  page.on("dialog", (dialog) => dialog.accept());
+  await page.goto("/admin/photos");
+  const share = page.locator("section.site-photo", {
+    has: page.getByRole("heading", { name: "Link preview image" }),
+  });
+  await expect(share.locator(".share-preview figcaption strong")).toHaveText(
+    "Logistic Hub — Your choice. Our responsibility.",
+  );
+  const ogImage = async () => {
+    const html = await (await request.get("/ka")).text();
+    return /<meta property="og:image" content="([^"]+)"/.exec(html)![1];
+  };
+  expect(await ogImage()).toMatch(/\/images\/share\/logistic-hub-ka\.jpg$/);
+
+  await share
+    .locator("input[type=file]")
+    .setInputFiles("public/images/hero-porsche.jpg");
+  await expect(share.locator(".focus-picker")).toBeVisible();
+  await share.getByLabel("Top to bottom").fill("80");
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await expect(page.getByText("Published.")).toBeVisible();
+  const url = await ogImage();
+  expect(url).toMatch(/\/share\/[0-9a-f]{16}\.jpg$/);
+  const image = await request.get(new URL(url).pathname);
+  expect(image.headers()["content-type"]).toBe("image/jpeg");
+  const size = await sharp(await image.body()).metadata();
+  expect([size.width, size.height]).toEqual([1200, 630]);
+
+  await share
+    .getByRole("button", { name: "Restore the original photo" })
+    .click();
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await expect(page.getByText("Published.")).toBeVisible();
+  expect(await ogImage()).toMatch(/\/images\/share\/logistic-hub-ka\.jpg$/);
+  expect((await request.get(new URL(url).pathname)).status()).toBe(404);
+  expect(photoCount()).toBe(before);
 });

@@ -165,5 +165,9 @@
   "Some photos could not be saved. Reload the page and try again.": "ზოგიერთი ფოტო ვერ შეინახა. განაახლეთ გვერდი და სცადეთ თავიდან.",
   "The photos could not be saved. Try again.": "ფოტოები ვერ შეინახა. სცადეთ თავიდან.",
   "The photos could not be published. Try again.": "ფოტოები ვერ გამოქვეყნდა. სცადეთ თავიდან.",
-  "Too many wrong passwords. Wait 15 minutes and try again.": "ძალიან ბევრი არასწორი პაროლი შეიყვანეს. დაელოდეთ 15 წუთს და სცადეთ თავიდან."
+  "Too many wrong passwords. Wait 15 minutes and try again.": "ძალიან ბევრი არასწორი პაროლი შეიყვანეს. დაელოდეთ 15 წუთს და სცადეთ თავიდან.",
+  "Link preview image": "ბმულის გაზიარების სურათი",
+  "Shown when a link to the homepage, the dealers page, the calculator or the car catalogue is shared on WhatsApp, Facebook, Telegram or X. Car pages show the car’s own photo.": "ჩანს, როცა მთავარი გვერდის, დილერების გვერდის, კალკულატორის ან ავტომობილების კატალოგის ბმულს აზიარებენ WhatsApp-ზე, Facebook-ზე, Telegram-ზე ან X-ზე. ავტომობილის გვერდებზე ჩანს თავად ავტომობილის ფოტო.",
+  "A landscape photo at least 1200 pixels across. It is cropped to 1200 × 630 around the focus point, and some apps trim the edges a little, so keep text away from them.": "ჰორიზონტალური ფოტო, სიგანით მინიმუმ 1200 პიქსელი. ფოტო ფოკუსის წერტილის გარშემო 1200 × 630 ზომაზე იჭრება, ზოგი აპლიკაცია კიდეებსაც ოდნავ ჭრის, ამიტომ ტექსტი კიდეებთან ახლოს ნუ განათავსეთ.",
+  "The title and description come from Site texts: the site-wide section and each page’s own texts.": "სათაური და აღწერა საიტის ტექსტებიდან მოდის: საერთო განყოფილებიდან და თითოეული გვერდის ტექსტებიდან."
 }

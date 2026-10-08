@@ -50,14 +50,19 @@ const key = (photo: SitePhoto | null | undefined) =>
       : null,
   );
 
+// The text a shared link shows under its image, for the preview.
+type ShareText = { host: string; title: string; description: string };
+
 export function SitePhotosEditor({
   lang,
   initialRows,
   canUpload,
+  share,
 }: {
   lang: AdminLang;
   initialRows: SitePhotoRow[];
   canUpload: boolean;
+  share: ShareText;
 }) {
   const t = adminTranslator(lang);
   const [rows, setRows] = useState(initialRows);
@@ -272,6 +277,12 @@ export function SitePhotosEditor({
                   ? ["edited", "Your photo is live"]
                   : ["original", "Original photo"]
           }
+          builtInSrc={
+            slot === "share"
+              ? `/images/share/logistic-hub-${lang}.jpg`
+              : sitePhotoSlots[slot].src
+          }
+          share={share}
           canUndo={isDirty(slot)}
           uploading={uploading === slot}
           canUpload={canUpload && !uploading && !busy}
@@ -290,6 +301,8 @@ function SlotCard({
   slot,
   photo,
   state,
+  builtInSrc,
+  share,
   canUndo,
   uploading,
   canUpload,
@@ -302,6 +315,8 @@ function SlotCard({
   slot: SitePhotoSlot;
   photo: SitePhoto | null;
   state: [string, string];
+  builtInSrc: string;
+  share: ShareText;
   canUndo: boolean;
   uploading: boolean;
   canUpload: boolean;
@@ -314,7 +329,7 @@ function SlotCard({
   const spot = sitePhotoSlots[slot];
   const input = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
-  const src = photo?.url ?? spot.src;
+  const src = photo?.url ?? builtInSrc;
   const focus = (device: "desktop" | "phone") =>
     photo ? `${photo.focusX}% ${photo.focusY}%` : spot.builtInFocus[device];
   const setFocus = (x: number, y: number) =>
@@ -352,37 +367,71 @@ function SlotCard({
         <em className="site-photo-state">{t(state[1])}</em>
       </header>
       <div className={`site-photo-body${dragOver ? " is-over" : ""}`}>
-        <div className="site-photo-previews">
-          {(["desktop", "phone"] as const).map((device) => (
-            <figure key={device} className={`is-${device}`}>
-              <div
-                className={`site-photo-frame shade-${spot.shade ?? "none"}`}
-                style={{ aspectRatio: spot[device] }}
-              >
-                <Image
-                  src={src}
-                  alt=""
-                  fill
-                  sizes={device === "desktop" ? "520px" : "140px"}
-                  style={{ objectPosition: focus(device) }}
-                />
-                {uploading && (
-                  <span className="site-photo-busy" role="status">
-                    <LoaderCircle
-                      className="spin"
-                      size={22}
-                      aria-hidden="true"
-                    />
-                    {device === "desktop" && t("Uploading…")}
-                  </span>
-                )}
-              </div>
-              <figcaption>
-                {t(device === "desktop" ? "On a computer" : "On a phone")}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        {spot.phone === null ? (
+          // A link as a chat app shows it; layouts differ a little by app.
+          <figure className="share-preview">
+            <div
+              className="site-photo-frame"
+              style={{ aspectRatio: spot.desktop }}
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                sizes="520px"
+                style={{ objectPosition: focus("desktop") }}
+              />
+              {uploading && (
+                <span className="site-photo-busy" role="status">
+                  <LoaderCircle className="spin" size={22} aria-hidden="true" />
+                  {t("Uploading…")}
+                </span>
+              )}
+            </div>
+            <figcaption>
+              <small>{share.host}</small>
+              <strong>{share.title}</strong>
+              <span>{share.description}</span>
+            </figcaption>
+            <p className="admin-hint">
+              {t(
+                "The title and description come from Site texts: the site-wide section and each page’s own texts.",
+              )}
+            </p>
+          </figure>
+        ) : (
+          <div className="site-photo-previews">
+            {(["desktop", "phone"] as const).map((device) => (
+              <figure key={device} className={`is-${device}`}>
+                <div
+                  className={`site-photo-frame shade-${spot.shade ?? "none"}`}
+                  style={{ aspectRatio: spot[device] }}
+                >
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes={device === "desktop" ? "520px" : "140px"}
+                    style={{ objectPosition: focus(device) }}
+                  />
+                  {uploading && (
+                    <span className="site-photo-busy" role="status">
+                      <LoaderCircle
+                        className="spin"
+                        size={22}
+                        aria-hidden="true"
+                      />
+                      {device === "desktop" && t("Uploading…")}
+                    </span>
+                  )}
+                </div>
+                <figcaption>
+                  {t(device === "desktop" ? "On a computer" : "On a phone")}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
         <div className="site-photo-side">
           {photo ? (
             <fieldset className="site-photo-focus">
