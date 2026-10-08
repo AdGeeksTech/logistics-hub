@@ -11,11 +11,9 @@ import {
 } from "lucide-react";
 import { maxPhotos, type Photo } from "@/lib/cars";
 
-const maxEdge = 1920;
-
 // Resizes in the browser so phone photos (often 5–15 MB) upload quickly
 // and stay under the upload limit. EXIF orientation is applied.
-async function prepare(file: File) {
+async function prepare(file: File, maxEdge: number) {
   const bitmap = await createImageBitmap(file, {
     imageOrientation: "from-image",
   });
@@ -42,6 +40,37 @@ async function prepare(file: File) {
   return { blob, width, height };
 }
 
+// Listing photos keep 1920px; the full-width site photos 2400px.
+export async function uploadPhoto(
+  file: File,
+  folder: "cars" | "site" = "cars",
+): Promise<Photo> {
+  const { blob, width, height } = await prepare(
+    file,
+    folder === "site" ? 2400 : 1920,
+  );
+  const body = new FormData();
+  body.set("file", new File([blob], "photo", { type: blob.type }));
+  body.set("width", String(width));
+  body.set("height", String(height));
+  body.set("folder", folder);
+  const response = await fetch("/api/admin/photos", { method: "POST", body });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok)
+    throw new Error(result.error || "Upload failed. Try again.");
+  return result as Photo;
+}
+
+// Decoding failures (e.g. HEIC in Chrome) surface as DOMException; a
+// dropped connection as TypeError; the server sends its own message.
+export const uploadError = (err: unknown) =>
+  err instanceof DOMException ||
+  (err instanceof Error && err.message === "encode")
+    ? "This file could not be read. Use a JPG, PNG or WebP photo."
+    : err instanceof TypeError || !(err instanceof Error)
+      ? "Upload failed. Try again."
+      : err.message;
+
 type Pending = { key: string; name: string; error?: string };
 
 export function PhotoManager({
@@ -67,21 +96,10 @@ export function PhotoManager({
 
   async function upload(file: File, key: string, order: number) {
     try {
-      const { blob, width, height } = await prepare(file);
-      const body = new FormData();
-      body.set("file", new File([blob], "photo", { type: blob.type }));
-      body.set("width", String(width));
-      body.set("height", String(height));
-      const response = await fetch("/api/admin/photos", {
-        method: "POST",
-        body,
-      });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok)
-        throw new Error(result.error || "Upload failed. Try again.");
-      picked.current.set((result as Photo).url, order);
+      const result = await uploadPhoto(file);
+      picked.current.set(result.url, order);
       onChange((list) => {
-        const next = [...list, result as Photo];
+        const next = [...list, result];
         const slots = next.flatMap((p, i) =>
           picked.current.has(p.url) ? [i] : [],
         );
@@ -95,17 +113,10 @@ export function PhotoManager({
       });
       setPending((list) => list.filter((p) => p.key !== key));
     } catch (err) {
-      // Decoding failures (e.g. HEIC in Chrome) surface as DOMException;
-      // a dropped connection as TypeError; the server sends its own message.
-      const message =
-        err instanceof DOMException ||
-        (err instanceof Error && err.message === "encode")
-          ? "This file could not be read. Use a JPG, PNG or WebP photo."
-          : err instanceof TypeError || !(err instanceof Error)
-            ? "Upload failed. Try again."
-            : err.message;
       setPending((list) =>
-        list.map((p) => (p.key === key ? { ...p, error: message } : p)),
+        list.map((p) =>
+          p.key === key ? { ...p, error: uploadError(err) } : p,
+        ),
       );
     }
   }

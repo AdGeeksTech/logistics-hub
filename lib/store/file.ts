@@ -1,12 +1,17 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Listing } from "../cars";
-import type { Store, TextRow } from "./types";
+import type { SitePhotoRow, Store, TextRow } from "./types";
 
 // Local development store: one JSON file, rewritten atomically. Production
 // uses Postgres (see ./postgres.ts); this keeps `npm run dev` working with
 // no database to set up.
-type Data = { nextId: number; listings: Listing[]; texts: TextRow[] };
+type Data = {
+  nextId: number;
+  listings: Listing[];
+  texts: TextRow[];
+  photos?: SitePhotoRow[];
+};
 
 export function fileStore(directory: string): Store {
   const file = join(directory, "store.json");
@@ -35,7 +40,12 @@ export function fileStore(directory: string): Store {
   }
   const clean = (data: Data) => {
     data.texts = data.texts.filter((t) => t.published !== null || t.hasDraft);
+    data.photos = (data.photos ?? []).filter(
+      (p) => p.published !== null || p.hasDraft,
+    );
   };
+  const same = (a: unknown, b: unknown) =>
+    JSON.stringify(a) === JSON.stringify(b);
   const now = () => new Date().toISOString();
   return {
     async listListings() {
@@ -134,6 +144,58 @@ export function fileStore(directory: string): Store {
     discardTextDrafts() {
       return update((data) => {
         const pending = data.texts.filter((t) => t.hasDraft);
+        for (const row of pending)
+          Object.assign(row, {
+            draft: null,
+            hasDraft: false,
+            updatedAt: now(),
+          });
+        clean(data);
+        return pending.length;
+      });
+    },
+    async getSitePhotos() {
+      return (await load()).photos ?? [];
+    },
+    saveSitePhotoDrafts(changes) {
+      return update((data) => {
+        data.photos ??= [];
+        for (const { slot, photo } of changes) {
+          let row = data.photos.find((p) => p.slot === slot);
+          if (!row) {
+            row = {
+              slot,
+              published: null,
+              draft: null,
+              hasDraft: false,
+              updatedAt: now(),
+            };
+            data.photos.push(row);
+          }
+          row.hasDraft = !same(row.published, photo);
+          row.draft = row.hasDraft ? photo : null;
+          row.updatedAt = now();
+        }
+        clean(data);
+      });
+    },
+    publishSitePhotos() {
+      return update((data) => {
+        const pending = (data.photos ?? []).filter((p) => p.hasDraft);
+        for (const row of pending)
+          Object.assign(row, {
+            published: row.draft,
+            draft: null,
+            hasDraft: false,
+            updatedAt: now(),
+          });
+        clean(data);
+        return pending.length;
+      });
+    },
+    discardSitePhotoDrafts() {
+      return update((data) => {
+        const pending = (data.photos ?? []).filter((p) => p.hasDraft);
         for (const row of pending)
           Object.assign(row, {
             draft: null,

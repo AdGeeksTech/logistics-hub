@@ -16,7 +16,9 @@ export async function PreviewBanner() {
       <Eye size={18} aria-hidden="true" />
       <p>
         <strong>{t("Preview")}</strong>{" "}
-        {t("Unpublished texts and draft listings are visible only to you.")}
+        {t(
+          "Unpublished texts, photos and draft listings are visible only to you.",
+        )}
       </p>
       <Link href="/admin">{t("Back to admin")}</Link>
       <form action="/api/preview/exit" method="post">

@@ -25,12 +25,13 @@ For layout changes, `node scripts/audit-layout.mjs` checks every page in every l
 
 Locally the admin works without any database: set `ADMIN_PASSWORD` in `.env.local`, run `npm run dev` and open `/admin`. Listings, edited texts and photos are saved under `.data/` (ignored by git), so nothing local reaches the live site.
 
-## Admin: car listings and site texts
+## Admin: car listings, site texts and site photos
 
 `/admin` is protected by one shared password (`ADMIN_PASSWORD`). Sessions last 14 days; changing the password signs everyone out. The admin is in Georgian by default and can be switched to English.
 
 - **Car listings** (`/admin/cars`): add a car with photos, myauto-style specifications (make, model, year, body, mileage, fuel, engine or battery and range, gearbox, drive, doors, seats, steering, colours, interior, airbags, VIN), a feature checklist, price with its terms (in China, in Tbilisi before or after customs), location and a description in any of the three languages. A status of Draft, Available, Reserved or Sold controls visibility; saving updates the site at once. Photos are resized in the browser before upload (longest side 1920px), reordered by dragging, and the first is the cover. "Duplicate as a new draft" speeds up posting similar cars, and preview shows a draft on the real page before it goes live.
 - **Site texts** (`/admin/texts`): every text on the site, grouped by page section, editable in Georgian, English and Russian. Edits are saved as drafts, previewed on the real site, then published together; "Restore the original" returns to the built-in wording.
+- **Site photos** (`/admin/photos`): replaces the homepage banner, the private buyers photo and the dealers page photo. Each spot previews the crop on a computer and a phone under the site's darkening; a focus point keeps the subject in view, and a description can be written in each language. Photos are resized in the browser (longest side 2400px) and follow the same draft, preview and publish steps as the texts; "Restore the original photo" brings back the built-in one. Replaced files are deleted once nothing uses them.
 
 Public pages: `/cars` (filters by make, body, fuel, location, price, year; sorting; sold cars on request) and `/cars/<id>-<make>-<model>-<year>`, plus `/ru/…` and `/ka/…`. The homepage shows the three newest cars once any are published.
 
@@ -72,6 +73,7 @@ Source: `/Users/giorgilabauri/Downloads/Logistic Hub - Website Content Package E
 - `app/admin/` and `components/admin/` — the admin; `app/admin/actions.ts` — every save, each checking the session.
 - `lib/store/` — storage: Postgres in production, a JSON file locally. `lib/photos.ts` — Vercel Blob or local files.
 - `lib/site-texts.ts` — admin-edited texts layered over `lib/i18n/{ru,ka}.json`; `lib/text-catalog.ts` lists every text by section for the editor. A new site text needs translations and a catalogue entry (`tests/site-texts.spec.ts` checks both).
+- `lib/site-photo-slots.ts` — the replaceable site photos, their crops and built-in fallbacks; `lib/site-photos.ts` — what each spot shows.
 - `components/inquiry.tsx` — progressive inquiry workflow.
 - `app/api/inquiry/route.ts` — optional email delivery.
 - `public/images/SOURCES.md` — photographic provenance.

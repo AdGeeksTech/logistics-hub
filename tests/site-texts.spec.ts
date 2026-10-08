@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFileSync, readdirSync } from "node:fs";
 import * as cars from "../lib/cars";
 import { sorts } from "../lib/car-filters";
+import { sitePhotoSlots } from "../lib/site-photo-slots";
 import { textSections } from "../lib/text-catalog";
 import ru from "../lib/i18n/ru.json" with { type: "json" };
 import ka from "../lib/i18n/ka.json" with { type: "json" };
@@ -43,6 +44,7 @@ function usedKeys() {
     for (const label of Object.values(group)) keys.add(label);
   for (const group of Object.keys(cars.featureGroups)) keys.add(group);
   for (const label of cars.specLabels) keys.add(label);
+  for (const slot of Object.values(sitePhotoSlots)) keys.add(slot.altKey);
   return keys;
 }
 

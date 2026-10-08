@@ -1,5 +1,6 @@
 import type { Listing, ListingFields } from "../cars";
 import type { Locale } from "../i18n";
+import type { SitePhotoSlot } from "../site-photo-slots";
 import type { Store, TextChange, TextRow } from "./types";
 
 export type Query = (
@@ -26,7 +27,16 @@ const schema = [
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (key, locale)
   )`,
+  `CREATE TABLE IF NOT EXISTS site_photos (
+    slot TEXT PRIMARY KEY,
+    published JSONB,
+    draft JSONB,
+    has_draft BOOLEAN NOT NULL DEFAULT false,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`,
 ];
+const json = (value: unknown) =>
+  value == null ? null : typeof value === "string" ? JSON.parse(value) : value;
 
 const iso = (value: unknown) =>
   value ? new Date(value as string | Date).toISOString() : null;
@@ -154,6 +164,56 @@ export function postgresStore(query: Query): Store {
       );
       await run(
         `DELETE FROM site_texts WHERE published IS NULL AND NOT has_draft`,
+      );
+      return rows.length;
+    },
+    async getSitePhotos() {
+      const rows = await run(
+        `SELECT slot, published, draft, has_draft, updated_at FROM site_photos`,
+      );
+      return rows.map((row) => ({
+        slot: row.slot as SitePhotoSlot,
+        published: json(row.published),
+        draft: json(row.draft),
+        hasDraft: Boolean(row.has_draft),
+        updatedAt: iso(row.updated_at)!,
+      }));
+    },
+    async saveSitePhotoDrafts(changes) {
+      for (const { slot, photo } of changes) {
+        const value = photo === null ? null : JSON.stringify(photo);
+        await run(
+          `INSERT INTO site_photos (slot, draft, has_draft)
+           VALUES ($1, $2::jsonb, $2::jsonb IS NOT NULL)
+           ON CONFLICT (slot) DO UPDATE SET
+             has_draft = site_photos.published IS DISTINCT FROM EXCLUDED.draft,
+             draft = CASE WHEN site_photos.published IS DISTINCT FROM EXCLUDED.draft
+                          THEN EXCLUDED.draft END,
+             updated_at = now()`,
+          [slot, value],
+        );
+      }
+      await run(
+        `DELETE FROM site_photos WHERE published IS NULL AND NOT has_draft`,
+      );
+    },
+    async publishSitePhotos() {
+      const rows = await run(
+        `UPDATE site_photos SET published = draft, draft = NULL, has_draft = false,
+           updated_at = now() WHERE has_draft RETURNING slot`,
+      );
+      await run(
+        `DELETE FROM site_photos WHERE published IS NULL AND NOT has_draft`,
+      );
+      return rows.length;
+    },
+    async discardSitePhotoDrafts() {
+      const rows = await run(
+        `UPDATE site_photos SET draft = NULL, has_draft = false, updated_at = now()
+         WHERE has_draft RETURNING slot`,
+      );
+      await run(
+        `DELETE FROM site_photos WHERE published IS NULL AND NOT has_draft`,
       );
       return rows.length;
     },

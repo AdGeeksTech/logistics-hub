@@ -1,4 +1,5 @@
 import { localizedPath, type Locale } from "@/lib/i18n";
+import { sitePhoto } from "@/lib/site-photos";
 import { getT } from "@/lib/site-texts";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,6 +9,7 @@ import { Footer } from "@/components/footer";
 import { Inquiry } from "@/components/inquiry";
 export default async function Dealers({ locale = "en" }: { locale?: Locale }) {
   const t = await getT(locale);
+  const photo = await sitePhoto("dealer", locale, t);
   return (
     <>
       <Header locale={locale} />
@@ -42,10 +44,9 @@ export default async function Dealers({ locale = "en" }: { locale?: Locale }) {
               </div>
               <div className="dealer-image">
                 <Image
-                  src="/images/vehicle-detail.jpg"
-                  alt={t(
-                    "Vehicles in an automotive showroom; illustrative photography",
-                  )}
+                  src={photo.src}
+                  alt={photo.alt}
+                  style={photo.style}
                   fill
                   priority
                   sizes="(max-width:760px) 100vw, 50vw"

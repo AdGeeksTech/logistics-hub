@@ -12,6 +12,7 @@ export function AdminNav({ lang }: { lang: AdminLang }) {
       {[
         ["/admin/cars", "Car listings"],
         ["/admin/texts", "Site texts"],
+        ["/admin/photos", "Site photos"],
       ].map(([href, label]) => (
         <Link
           key={href}

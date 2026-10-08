@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     );
   }
   const file = form.get("file");
+  const folder = form.get("folder") === "site" ? "site" : "cars";
   const width = Number(form.get("width"));
   const height = Number(form.get("height"));
   if (
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   try {
-    const url = await savePhoto(bytes, file.type as PhotoType);
+    const url = await savePhoto(bytes, file.type as PhotoType, folder);
     return NextResponse.json({ url, width, height });
   } catch (error) {
     console.error("Photo upload failed", error);

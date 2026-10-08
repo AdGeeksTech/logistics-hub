@@ -242,3 +242,104 @@ test("site texts are saved as drafts, previewed and then published", async ({
   await expect(visitor.locator("html")).toHaveAttribute("lang", "ru");
   await visitor.context().close();
 });
+
+test("site photos are replaced as drafts, previewed, published and restored", async ({
+  page,
+  context,
+  browser,
+}) => {
+  const before = photoCount();
+  await signIn(page, context);
+  page.on("dialog", (dialog) => dialog.accept());
+  await page.goto("/admin/photos");
+  const slot = (title: string) =>
+    page.locator("section.site-photo", {
+      has: page.getByRole("heading", { name: title }),
+    });
+  const hero = slot("Homepage banner");
+  await expect(hero).toHaveAttribute("data-state", "original");
+
+  await hero
+    .locator("input[type=file]")
+    .setInputFiles("public/images/vehicle-detail.jpg");
+  await expect(hero.locator(".focus-picker")).toBeVisible();
+  await expect(hero).toHaveAttribute("data-state", "unsaved");
+  await hero.getByLabel("Left to right").fill("30");
+  await hero.locator("input[lang=en]").fill("A silver coupe in a showroom");
+  await expect(hero.locator(".site-photo-frame img").first()).toHaveCSS(
+    "object-position",
+    "30% 50%",
+  );
+  await page.getByRole("button", { name: "Save drafts" }).click();
+  await expect(page.getByText("Saved as drafts.")).toBeVisible();
+  await expect(hero).toHaveAttribute("data-state", "draft");
+  expect(photoCount()).toBe(before + 1);
+  expect(await violations(page)).toEqual([]);
+
+  // Visitors keep the original photo until the draft is published.
+  const visitor = await (await browser.newContext()).newPage();
+  await visitor.goto("/");
+  await expect(visitor.locator(".hero-image")).toHaveAttribute(
+    "src",
+    /hero-porsche/,
+  );
+  await page.goto("/api/admin/preview?path=/");
+  await expect(page.locator(".hero-image")).toHaveAttribute(
+    "src",
+    /api%2Fuploads/,
+  );
+  await page.getByRole("button", { name: "Exit preview" }).click();
+
+  await page.goto("/admin/photos");
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await expect(page.getByText("Published.")).toBeVisible();
+  await expect(hero).toHaveAttribute("data-state", "edited");
+  await visitor.goto("/");
+  const image = visitor.locator(".hero-image");
+  await expect(image).toHaveAttribute("src", /api%2Fuploads/);
+  await expect(image).toHaveAttribute("alt", "A silver coupe in a showroom");
+  await expect(image).toHaveCSS("object-position", "30% 50%");
+  // Without a Georgian description, the English one is used.
+  await visitor.goto("/ka");
+  await expect(visitor.locator(".hero-image")).toHaveAttribute(
+    "alt",
+    "A silver coupe in a showroom",
+  );
+
+  // A photo replaced before saving, and a discarded draft, leave no files.
+  const dealer = slot("Dealers page photo");
+  const input = dealer.locator("input[type=file]");
+  await input.setInputFiles("public/images/hero-porsche.jpg");
+  const picker = dealer.locator(".focus-picker img");
+  await expect(picker).toBeVisible();
+  const first = await picker.getAttribute("src");
+  await input.setInputFiles("public/images/vehicle-detail.jpg");
+  await expect(picker).not.toHaveAttribute("src", first!);
+  expect(photoCount()).toBe(before + 3);
+  await page.getByRole("button", { name: "Save drafts" }).click();
+  await expect(page.getByText("Saved as drafts.")).toBeVisible();
+  expect(photoCount()).toBe(before + 2);
+  await page
+    .getByRole("button", { name: "Discard unpublished changes" })
+    .click();
+  await expect(
+    page.getByText("Unpublished changes were discarded."),
+  ).toBeVisible();
+  await expect(dealer).toHaveAttribute("data-state", "original");
+  expect(photoCount()).toBe(before + 1);
+
+  // Restoring the original and publishing removes the replaced photo.
+  await hero
+    .getByRole("button", { name: "Restore the original photo" })
+    .click();
+  await page.getByRole("button", { name: "Publish", exact: true }).click();
+  await expect(page.getByText("Published.")).toBeVisible();
+  await expect(hero).toHaveAttribute("data-state", "original");
+  expect(photoCount()).toBe(before);
+  await visitor.goto("/");
+  await expect(visitor.locator(".hero-image")).toHaveAttribute(
+    "src",
+    /hero-porsche/,
+  );
+  await visitor.context().close();
+});

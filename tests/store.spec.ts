@@ -116,4 +116,44 @@ for (const [name, open] of backends) {
     expect(await store.getTexts()).toEqual([]);
     await close();
   });
+
+  test(`${name} store drafts and publishes site photos`, async () => {
+    const [store, close] = await open();
+    const photo = {
+      url: "/api/uploads/00000000-0000-0000-0000-000000000000.webp",
+      width: 2560,
+      height: 1440,
+      focusX: 40,
+      focusY: 60,
+      alt: { en: "Cars at the port" },
+    };
+    const row = async () =>
+      (await store.getSitePhotos()).find((p) => p.slot === "hero");
+    await store.saveSitePhotoDrafts([
+      { slot: "hero", photo },
+      { slot: "buyer", photo: null },
+    ]);
+    expect(await row()).toMatchObject({
+      draft: photo,
+      hasDraft: true,
+      published: null,
+    });
+    expect((await store.getSitePhotos()).length).toBe(1);
+    expect(await store.publishSitePhotos()).toBe(1);
+    expect(await row()).toMatchObject({ published: photo, hasDraft: false });
+    // Same photo again is not a change; a new focus point is.
+    await store.saveSitePhotoDrafts([{ slot: "hero", photo }]);
+    expect((await row())?.hasDraft).toBe(false);
+    await store.saveSitePhotoDrafts([
+      { slot: "hero", photo: { ...photo, focusX: 10 } },
+    ]);
+    expect((await row())?.draft?.focusX).toBe(10);
+    expect(await store.discardSitePhotoDrafts()).toBe(1);
+    expect((await row())?.published?.focusX).toBe(40);
+    // Back to the built-in photo, published: the row disappears.
+    await store.saveSitePhotoDrafts([{ slot: "hero", photo: null }]);
+    await store.publishSitePhotos();
+    expect(await store.getSitePhotos()).toEqual([]);
+    await close();
+  });
 }

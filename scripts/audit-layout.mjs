@@ -349,8 +349,19 @@ if (!publicOnly) {
       "/admin/cars/1",
       "/admin/cars/2",
       "/admin/texts",
+      "/admin/photos",
     ])
       await run(admin, `admin/${lang}`, path);
+    // A replaced photo adds the focus point and description fields. The
+    // upload is never saved; it stays in the local test data only.
+    await run(admin, `admin/${lang} photo`, "/admin/photos", async (page) => {
+      if (await page.locator(".focus-picker").count()) return;
+      await page
+        .locator(".site-photo input[type=file]")
+        .first()
+        .setInputFiles("public/images/vehicle-detail.jpg");
+      await page.locator(".focus-picker").waitFor();
+    });
     await run(
       admin,
       `admin/${lang} errors`,

@@ -4,7 +4,13 @@ import { fileStore } from "./file";
 import { postgresStore } from "./postgres";
 import type { Store } from "./types";
 
-export type { Store, TextChange, TextRow } from "./types";
+export type {
+  SitePhotoChange,
+  SitePhotoRow,
+  Store,
+  TextChange,
+  TextRow,
+} from "./types";
 
 const databaseUrl = () => process.env.DATABASE_URL || process.env.POSTGRES_URL;
 

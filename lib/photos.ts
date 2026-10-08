@@ -20,10 +20,15 @@ export type PhotoType = keyof typeof photoTypes;
 const uploads = () => join(localDataDir(), "uploads");
 const localName = /^\/api\/uploads\/([0-9a-f-]{36}\.(?:webp|jpg))$/;
 
-export async function savePhoto(bytes: Buffer, type: PhotoType) {
+// Listing photos go in cars/, the site's own photos in site/.
+export async function savePhoto(
+  bytes: Buffer,
+  type: PhotoType,
+  folder: "cars" | "site" = "cars",
+) {
   const name = `${randomUUID()}.${photoTypes[type]}`;
   if (photoStorageKind() === "blob") {
-    const blob = await put(`cars/${name}`, bytes, {
+    const blob = await put(`${folder}/${name}`, bytes, {
       access: "public",
       contentType: type,
       cacheControlMaxAge: 31536000,

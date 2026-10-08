@@ -1,4 +1,5 @@
 import { localizedPath, type Locale } from "@/lib/i18n";
+import { sitePhoto } from "@/lib/site-photos";
 import { getT } from "@/lib/site-texts";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,14 +50,19 @@ export default async function Home({
   initialRegion?: string;
 }) {
   const t = await getT(locale);
+  const [hero, buyer] = await Promise.all([
+    sitePhoto("hero", locale, t),
+    sitePhoto("buyer", locale, t),
+  ]);
   return (
     <>
       <Header locale={locale} />
       <main id="main">
         <section className="hero">
           <Image
-            src="/images/hero-porsche.jpg"
-            alt={t("A dark Porsche travelling on an open road")}
+            src={hero.src}
+            alt={hero.alt}
+            style={hero.style}
             fill
             priority
             sizes="100vw"
@@ -131,8 +137,9 @@ export default async function Home({
           <div className="service-layout">
             <div className="buyer-photo">
               <Image
-                src="/images/vehicle-detail.jpg"
-                alt={t("A silver sports car in an automotive showroom")}
+                src={buyer.src}
+                alt={buyer.alt}
+                style={buyer.style}
                 fill
                 sizes="(max-width: 760px) 100vw, 50vw"
               />
