@@ -85,19 +85,12 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
           <Link href={localizedPath(locale, "/cars")}>
             {t("Cars from China")}
           </Link>
-          <Link href={localizedPath(locale, "/#services")}>
-            {t("Our services")}
-          </Link>
-          <Link href={localizedPath(locale, "/#how-it-works")}>
-            {t("How it works")}
-          </Link>
           <Link href={localizedPath(locale, "/dealers")}>
             {t("For dealers")}
           </Link>
           <Link href={localizedPath(locale, "/calculator")}>
             {t("Fee calculator")}
           </Link>
-          <Link href={localizedPath(locale, "/#about")}>{t("About us")}</Link>
         </nav>
         <Link
           href={localizedPath(locale, "/#inquiry")}
@@ -125,11 +118,8 @@ export function Header({ locale = "en" }: { locale?: Locale }) {
         >
           {[
             ["Cars from China", "/cars"],
-            ["Our services", "/#services"],
-            ["How it works", "/#how-it-works"],
             ["For dealers", "/dealers"],
             ["Fee calculator", "/calculator"],
-            ["About us", "/#about"],
             ["Let’s talk", "/#inquiry"],
           ].map(([label, href]) => (
             <Link
