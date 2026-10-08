@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { unstable_cache } from "next/cache";
 import { draftMode } from "next/headers";
 import { cache } from "react";
@@ -41,6 +42,14 @@ const getReplacements = cache(async (): Promise<Replacements> => {
 export async function getSharePhoto() {
   return (await getReplacements()).share ?? null;
 }
+// Names the link-preview file after the photo and its crop, so a change
+// gets a new address that apps fetch again.
+export const shareFileName = (photo: SitePhoto) =>
+  `${createHash("sha256")
+    .update(`${photo.url} ${photo.focusX} ${photo.focusY}`)
+    .digest("hex")
+    .slice(0, 16)}.jpg`;
+
 // The published one, for the image route, which has no preview mode.
 export async function getPublishedSharePhoto() {
   try {

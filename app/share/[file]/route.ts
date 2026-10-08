@@ -1,21 +1,20 @@
 import sharp from "sharp";
 import { readLocalPhoto } from "@/lib/photos";
-import { getPublishedSharePhoto } from "@/lib/site-photos";
+import { getPublishedSharePhoto, shareFileName } from "@/lib/site-photos";
 
 // The link-preview image chosen in the admin, cropped to 1200 × 630 the
-// same way the admin preview shows it, as a JPEG every app can read. The
-// file name only changes with the photo or its focus point, so copies can
-// be cached for good. Outside /api/ so robots.txt does not hide it from
-// preview crawlers.
+// same way the admin preview shows it, as a JPEG every app can read. Only
+// the current photo's file name answers, and copies are cached for an
+// hour, so a replaced or removed photo stops being served soon after.
+// Outside /api/ so robots.txt does not hide it from preview crawlers.
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ file: string }> },
 ) {
   const { file } = await params;
-  const photo = /^[a-z0-9]{1,40}\.jpg$/.test(file)
-    ? await getPublishedSharePhoto()
-    : null;
-  if (!photo) return new Response("Not found", { status: 404 });
+  const photo = await getPublishedSharePhoto();
+  if (!photo || file !== shareFileName(photo))
+    return new Response("Not found", { status: 404 });
   try {
     const local = /^\/api\/uploads\/(.+)$/.exec(photo.url);
     const source = local
@@ -40,7 +39,7 @@ export async function GET(
     return new Response(new Uint8Array(jpeg), {
       headers: {
         "Content-Type": "image/jpeg",
-        "Cache-Control": "public, max-age=86400, s-maxage=31536000",
+        "Cache-Control": "public, max-age=3600, s-maxage=3600",
       },
     });
   } catch (error) {

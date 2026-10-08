@@ -409,6 +409,8 @@ test("the link preview image is replaced, cropped to 1200 × 630 and restored", 
   expect(image.headers()["content-type"]).toBe("image/jpeg");
   const size = await sharp(await image.body()).metadata();
   expect([size.width, size.height]).toEqual([1200, 630]);
+  // Only the current photo's address answers.
+  expect((await request.get("/share/0123456789abcdef.jpg")).status()).toBe(404);
 
   await share
     .getByRole("button", { name: "Restore the original photo" })

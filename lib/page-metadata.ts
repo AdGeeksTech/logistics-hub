@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { createHash } from "node:crypto";
 import { alternatePaths, locales, localizedPath, type Locale } from "./i18n";
-import { getSharePhoto } from "./site-photos";
+import { getSharePhoto, shareFileName } from "./site-photos";
 import { getT } from "./site-texts";
 
 type T = (source: string) => string;
@@ -25,14 +24,9 @@ async function shareImage(locale: Locale, alt: string) {
       height: 630,
       alt,
     };
-  // A new name whenever the photo or its crop changes, so apps refetch it.
-  const version = createHash("sha256")
-    .update(`${photo.url} ${photo.focusX} ${photo.focusY}`)
-    .digest("hex")
-    .slice(0, 16);
   const { alt: described } = photo;
   return {
-    url: `/share/${version}.jpg`,
+    url: `/share/${shareFileName(photo)}`,
     width: 1200,
     height: 630,
     alt:
