@@ -61,8 +61,11 @@ export function PhotoManager({
   const [pending, setPending] = useState<Pending[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const dragged = useRef<number | null>(null);
+  // Selection order of every uploaded photo, by URL. Uploads finish in any
+  // order; photos chosen together are kept in the order they were picked.
+  const picked = useRef(new Map<string, number>());
 
-  async function upload(file: File, key: string) {
+  async function upload(file: File, key: string, order: number) {
     try {
       const { blob, width, height } = await prepare(file);
       const body = new FormData();
@@ -76,7 +79,20 @@ export function PhotoManager({
       const result = await response.json().catch(() => ({}));
       if (!response.ok)
         throw new Error(result.error || "Upload failed. Try again.");
-      onChange((list) => [...list, result as Photo].slice(0, maxPhotos));
+      picked.current.set((result as Photo).url, order);
+      onChange((list) => {
+        const next = [...list, result as Photo];
+        const slots = next.flatMap((p, i) =>
+          picked.current.has(p.url) ? [i] : [],
+        );
+        const ordered = slots
+          .map((i) => next[i])
+          .sort(
+            (a, b) => picked.current.get(a.url)! - picked.current.get(b.url)!,
+          );
+        slots.forEach((slot, k) => (next[slot] = ordered[k]));
+        return next.slice(0, maxPhotos);
+      });
       setPending((list) => list.filter((p) => p.key !== key));
     } catch (err) {
       // Decoding failures (e.g. HEIC in Chrome) surface as DOMException;
@@ -100,18 +116,22 @@ export function PhotoManager({
     const chosen = [...files]
       .filter((f) => f.type.startsWith("image/"))
       .slice(0, Math.max(0, room));
-    const items = chosen.map((file) => ({
+    // A fresh batch: photos from earlier batches keep their places.
+    picked.current = new Map();
+    const items = chosen.map((file, order) => ({
       file,
+      order,
       key: `${Date.now()}-${Math.random()}`,
     }));
     setPending((list) => [
       ...list.filter((p) => !p.error),
       ...items.map(({ file, key }) => ({ key, name: file.name })),
     ]);
-    // Three at a time keeps the order close to the selection order.
     for (let i = 0; i < items.length; i += 3)
       await Promise.all(
-        items.slice(i, i + 3).map((item) => upload(item.file, item.key)),
+        items
+          .slice(i, i + 3)
+          .map((item) => upload(item.file, item.key, item.order)),
       );
   }
 

@@ -71,8 +71,8 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
   await page
     .locator("input[type=file]")
     .setInputFiles([
-      "public/images/vehicle-detail.jpg",
       "public/images/hero-porsche.jpg",
+      "public/images/vehicle-detail.jpg",
     ]);
   await expect(page.locator(".photo-grid li img")).toHaveCount(2);
   await page.getByLabel("Version / trim").fill("Excellence AWD");
@@ -121,6 +121,11 @@ test("a car is listed, edited, previewed as a draft and removed", async ({
     "One owner.\nFull service history.",
   );
   expect(await violations(visitor)).toEqual([]);
+  // The first photo chosen (large, resized to 1920px) stays the cover even
+  // though the smaller second photo finishes uploading first.
+  await expect(
+    visitor.locator('meta[property="og:image:width"]'),
+  ).toHaveAttribute("content", "1920");
   await expect(visitor.locator(".gallery-main .gallery-count")).toHaveText(
     "1 / 2",
   );

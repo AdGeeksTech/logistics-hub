@@ -134,7 +134,7 @@ export default async function CarsPage({
               <nav className="pagination" aria-label={t("Pages")}>
                 {page > 1 && (
                   <Link
-                    href={path + filterQuery({ ...filters, page: page - 1 })}
+                    href={`${path}${filterQuery({ ...filters, page: page - 1 })}#cars-results`}
                     aria-label={t("Previous page")}
                   >
                     <ArrowLeft size={18} />
@@ -143,7 +143,7 @@ export default async function CarsPage({
                 {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
                   <Link
                     key={n}
-                    href={path + filterQuery({ ...filters, page: n })}
+                    href={`${path}${filterQuery({ ...filters, page: n })}#cars-results`}
                     aria-current={n === page ? "page" : undefined}
                   >
                     {n}
@@ -151,7 +151,7 @@ export default async function CarsPage({
                 ))}
                 {page < pages && (
                   <Link
-                    href={path + filterQuery({ ...filters, page: page + 1 })}
+                    href={`${path}${filterQuery({ ...filters, page: page + 1 })}#cars-results`}
                     aria-label={t("Next page")}
                   >
                     <ArrowRight size={18} />
