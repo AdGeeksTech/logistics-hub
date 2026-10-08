@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { type Locale } from "@/lib/i18n";
+import { siteDescription, siteTitle } from "@/lib/page-metadata";
 import { siteUrl } from "@/lib/site-url";
 import { getT, getTextOverrides } from "@/lib/site-texts";
 import { TextsProvider } from "@/components/texts-provider";
@@ -37,12 +38,10 @@ export async function siteMetadata(locale: Locale): Promise<Metadata> {
     // Makes canonical, language and preview-image links absolute.
     metadataBase: siteUrl(),
     title: {
-      default: `Logistic Hub — ${t("Your choice. Our responsibility.")}`,
+      default: siteTitle(t),
       template: "%s | Logistic Hub",
     },
-    description: t(
-      "Vehicle sourcing from the USA, Europe and China. Expert inspection, auction access and delivery support for private buyers and automotive dealers in Tbilisi.",
-    ),
+    description: siteDescription(t),
   };
 }
 export default async function DocumentLayout({

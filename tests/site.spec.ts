@@ -125,6 +125,38 @@ test("one visitor cannot send more than five inquiries in ten minutes", async ({
   ).toBe(400);
 });
 
+test("shared links show a title, description and image in their language", async ({
+  page,
+  request,
+}) => {
+  const og = (property: string) =>
+    page.locator(`meta[property="og:${property}"]`);
+  for (const [path, lang, title] of [
+    ["/", "en", "Logistic Hub — Your choice. Our responsibility."],
+    ["/ka/dealers", "ka", "ავტოდილერებისთვის | Logistic Hub"],
+    ["/ru/calculator", "ru", "Калькулятор аукционных сборов | Logistic Hub"],
+    ["/cars", "en", "Cars from China | Logistic Hub"],
+  ]) {
+    await page.goto(path);
+    await expect(og("title")).toHaveAttribute("content", title);
+    await expect(og("description")).toHaveAttribute("content", /.{40}/);
+    await expect(og("url")).toHaveAttribute(
+      "content",
+      new RegExp(`^https?://[^/]+${path === "/" ? "/?" : path}$`),
+    );
+    await expect(og("image")).toHaveAttribute(
+      "content",
+      new RegExp(`^https?://.+/images/share/logistic-hub-${lang}\\.jpg$`),
+    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary_large_image",
+    );
+  }
+  const image = await request.get(`/images/share/logistic-hub-ka.jpg`);
+  expect(image.headers()["content-type"]).toBe("image/jpeg");
+});
+
 test("search engines get robots rules and a sitemap in every language", async ({
   request,
 }) => {

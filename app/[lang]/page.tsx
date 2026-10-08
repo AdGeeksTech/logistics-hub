@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Home from "@/components/home-page";
-import { isLocale, alternatePaths, localizedPath } from "@/lib/i18n";
+import { isLocale } from "@/lib/i18n";
+import { homeMetadata } from "@/lib/page-metadata";
 export async function generateMetadata({
   params,
 }: {
@@ -8,9 +9,7 @@ export async function generateMetadata({
 }) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  return {
-    alternates: { canonical: localizedPath(lang), languages: alternatePaths() },
-  };
+  return homeMetadata(lang);
 }
 export default async function Page({
   params,

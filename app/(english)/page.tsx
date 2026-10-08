@@ -1,8 +1,8 @@
 import Home from "@/components/home-page";
-import { alternatePaths } from "@/lib/i18n";
-export const metadata = {
-  alternates: { canonical: "/", languages: alternatePaths() },
-};
+import { homeMetadata } from "@/lib/page-metadata";
+export function generateMetadata() {
+  return homeMetadata("en");
+}
 export default async function Page({
   searchParams,
 }: {

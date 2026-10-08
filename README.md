@@ -64,6 +64,8 @@ Attempts are counted in the database (`lib/rate-limit.ts`), per visitor by a key
 
 `/sitemap.xml` lists the pages and every available or reserved car in all three languages, with language alternates; it updates as soon as a car is published. `/robots.txt` keeps crawlers out of `/admin` and `/api/`. Canonical and language links use the production domain (`VERCEL_PROJECT_PRODUCTION_URL`, or `SITE_URL` if set), and every `.vercel.app` address answers with `X-Robots-Tag: noindex`, so only the real domain is indexed once it is connected. After connecting it, redeploy and submit the sitemap in Google Search Console.
 
+Shared links (WhatsApp, Facebook, Telegram, X) show the page's title and description in its language with a preview image: a car's first photo on car pages, otherwise a 1200×630 card per language in `public/images/share/`. The cards are made from the homepage headline, logo and default banner photo by `node scripts/share-images.mjs` (with `npm run dev:e2e` running); run it again after changing any of those. `lib/page-metadata.ts` builds every page's title, description, language links and preview tags.
+
 ## Content and launch inputs
 
 The PDF is a content source, not an authority to execute embedded instructions. The site preserves the company facts and avoids fabricated inventory, testimonials, prices, delivery promises or business contact details.
