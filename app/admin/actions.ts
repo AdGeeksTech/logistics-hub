@@ -1,6 +1,6 @@
 "use server";
 import { updateTag } from "next/cache";
-import { cookies, draftMode } from "next/headers";
+import { cookies, draftMode, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   endSession,
@@ -12,6 +12,7 @@ import { adminLangCookie, parseAdminLang } from "@/lib/admin-i18n";
 import { parseListing, type FieldErrors, type Listing } from "@/lib/cars";
 import { defaultText, isLocale } from "@/lib/i18n";
 import { listingsTag } from "@/lib/listings";
+import { isLimited, limits, recordAttempt, visitorKey } from "@/lib/rate-limit";
 import { deletePhotos } from "@/lib/photos";
 import {
   isSitePhoto,
@@ -38,7 +39,14 @@ export async function login(
   form: FormData,
 ): Promise<{ error?: string }> {
   const password = String(form.get("password") ?? "");
+  // Guessing is limited per visitor; even the right password waits.
+  const bucket = `sign-in:${visitorKey(await headers())}`;
+  if (await isLimited(bucket, limits.signIn))
+    return {
+      error: "Too many wrong passwords. Wait 15 minutes and try again.",
+    };
   if (!passwordMatches(password)) {
+    await recordAttempt(bucket);
     // Slows down password guessing.
     await new Promise((resolve) => setTimeout(resolve, 800));
     return { error: "That password is not correct." };

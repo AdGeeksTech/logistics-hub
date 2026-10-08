@@ -219,6 +219,8 @@ export const textSections: { title: string; note?: string; keys: string[] }[] =
         "Check your name, email and vehicle requirements, then try again.",
         "Online sending is not available yet. Please return to the form to prepare a downloadable inquiry.",
         "Your inquiry could not be sent. Your details are still in the form; please try again.",
+        "Too many inquiries from this connection. Please wait a few minutes and try again.",
+        "We are receiving too many inquiries right now. Please try again later.",
       ],
     },
     {

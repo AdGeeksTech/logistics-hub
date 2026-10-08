@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { draftMode } from "next/headers";
 import { type Locale } from "@/lib/i18n";
+import { siteUrl } from "@/lib/site-url";
 import { getT, getTextOverrides } from "@/lib/site-texts";
 import { TextsProvider } from "@/components/texts-provider";
 import { PreviewBanner } from "@/components/preview-banner";
@@ -33,6 +34,8 @@ export const fontClasses = `${display.variable} ${body.variable} ${georgian.vari
 export async function siteMetadata(locale: Locale): Promise<Metadata> {
   const t = await getT(locale);
   return {
+    // Makes canonical, language and preview-image links absolute.
+    metadataBase: siteUrl(),
     title: {
       default: `Logistic Hub — ${t("Your choice. Our responsibility.")}`,
       template: "%s | Logistic Hub",

@@ -34,6 +34,11 @@ const schema = [
     has_draft BOOLEAN NOT NULL DEFAULT false,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`,
+  `CREATE TABLE IF NOT EXISTS rate_hits (
+    bucket TEXT NOT NULL,
+    at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`,
+  `CREATE INDEX IF NOT EXISTS rate_hits_bucket_at ON rate_hits (bucket, at)`,
 ];
 const json = (value: unknown) =>
   value == null ? null : typeof value === "string" ? JSON.parse(value) : value;
@@ -216,6 +221,25 @@ export function postgresStore(query: Query): Store {
         `DELETE FROM site_photos WHERE published IS NULL AND NOT has_draft`,
       );
       return rows.length;
+    },
+    async addHit(bucket) {
+      await run(
+        `WITH expired AS (DELETE FROM rate_hits WHERE at < now() - interval '1 day')
+         INSERT INTO rate_hits (bucket) VALUES ($1)`,
+        [bucket],
+      );
+    },
+    async countHits(bucket, windows) {
+      const [row] = await run(
+        `SELECT ${windows
+          .map(
+            (_, i) =>
+              `count(*) FILTER (WHERE at > now() - make_interval(secs => $${i + 2})) AS w${i}`,
+          )
+          .join(", ")} FROM rate_hits WHERE bucket = $1`,
+        [bucket, ...windows],
+      );
+      return windows.map((_, i) => Number(row[`w${i}`]));
     },
   };
 }

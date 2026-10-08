@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isLimited, limits, recordAttempt, visitorKey } from "@/lib/rate-limit";
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin)
@@ -6,6 +7,17 @@ export async function POST(request: Request) {
       { error: "Please send your inquiry from this website." },
       { status: 403 },
     );
+  // Every request counts towards the visitor's limit, valid or not.
+  const visitor = `inquiry:${visitorKey(request.headers)}`;
+  if (await isLimited(visitor, limits.inquiry))
+    return NextResponse.json(
+      {
+        error:
+          "Too many inquiries from this connection. Please wait a few minutes and try again.",
+      },
+      { status: 429, headers: { "Retry-After": "600" } },
+    );
+  await recordAttempt(visitor);
   if (Number(request.headers.get("content-length") || 0) > 16000)
     return NextResponse.json(
       { error: "Your inquiry is too long." },
@@ -68,6 +80,15 @@ export async function POST(request: Request) {
       },
       { status: 503 },
     );
+  if (await isLimited("inquiry-emails", limits.inquiryEmails))
+    return NextResponse.json(
+      {
+        error:
+          "We are receiving too many inquiries right now. Please try again later.",
+      },
+      { status: 429, headers: { "Retry-After": "3600" } },
+    );
+  await recordAttempt("inquiry-emails");
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",

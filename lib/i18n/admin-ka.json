@@ -164,5 +164,6 @@
   "A short description for people who cannot see the photo and for search engines. Write it in at least one language.": "მოკლე აღწერა მათთვის, ვინც ფოტოს ვერ ხედავს, და საძიებო სისტემებისთვის. შეავსეთ ერთ ენაზე მაინც.",
   "Some photos could not be saved. Reload the page and try again.": "ზოგიერთი ფოტო ვერ შეინახა. განაახლეთ გვერდი და სცადეთ თავიდან.",
   "The photos could not be saved. Try again.": "ფოტოები ვერ შეინახა. სცადეთ თავიდან.",
-  "The photos could not be published. Try again.": "ფოტოები ვერ გამოქვეყნდა. სცადეთ თავიდან."
+  "The photos could not be published. Try again.": "ფოტოები ვერ გამოქვეყნდა. სცადეთ თავიდან.",
+  "Too many wrong passwords. Wait 15 minutes and try again.": "ძალიან ბევრი არასწორი პაროლი შეიყვანეს. დაელოდეთ 15 წუთს და სცადეთ თავიდან."
 }

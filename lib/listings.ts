@@ -16,6 +16,16 @@ const loadPublic = unstable_cache(
   { tags: [listingsTag] },
 );
 
+// For the sitemap, which has no preview mode.
+export async function getPublicListings() {
+  try {
+    return await loadPublic();
+  } catch (error) {
+    console.error("Could not load listings", error);
+    return [];
+  }
+}
+
 // In preview (draft mode) admins also see drafts, straight from the store.
 export const getVisibleListings = cache(async (): Promise<Listing[]> => {
   try {

@@ -156,4 +156,18 @@ for (const [name, open] of backends) {
     expect(await store.getSitePhotos()).toEqual([]);
     await close();
   });
+
+  test(`${name} store counts attempts per bucket and window`, async () => {
+    const [store, close] = await open();
+    expect(await store.countHits("login:a", [60, 86400])).toEqual([0, 0]);
+    await store.addHit("login:a");
+    await store.addHit("login:a");
+    await store.addHit("login:b");
+    expect(await store.countHits("login:a", [60, 86400])).toEqual([2, 2]);
+    expect(await store.countHits("login:b", [60])).toEqual([1]);
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+    // Older than a one-second window, still inside the day.
+    expect(await store.countHits("login:a", [1, 86400])).toEqual([0, 2]);
+    await close();
+  });
 }

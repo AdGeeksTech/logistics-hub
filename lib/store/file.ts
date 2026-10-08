@@ -11,6 +11,7 @@ type Data = {
   listings: Listing[];
   texts: TextRow[];
   photos?: SitePhotoRow[];
+  hits?: { bucket: string; at: number }[];
 };
 
 export function fileStore(directory: string): Store {
@@ -205,6 +206,22 @@ export function fileStore(directory: string): Store {
         clean(data);
         return pending.length;
       });
+    },
+    async addHit(bucket) {
+      await update((data) => {
+        const dayAgo = Date.now() - 86400000;
+        data.hits = (data.hits ?? []).filter((h) => h.at > dayAgo);
+        data.hits.push({ bucket, at: Date.now() });
+      });
+    },
+    async countHits(bucket, windows) {
+      const hits = ((await load()).hits ?? []).filter(
+        (h) => h.bucket === bucket,
+      );
+      return windows.map(
+        (seconds) =>
+          hits.filter((h) => h.at > Date.now() - seconds * 1000).length,
+      );
     },
   };
 }

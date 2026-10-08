@@ -19,8 +19,12 @@ export function defaultText(locale: Locale, source: string) {
 export function translator(locale: Locale, overrides: TextOverrides = {}) {
   return (source: string) => overrides[source] ?? defaultText(locale, source);
 }
+// "/ru", not "/ru/": the trailing-slash form only redirects here, and
+// search engines expect canonical links to point at the final address.
 export function localizedPath(locale: Locale, path = "/") {
-  return locale === "en" ? path : `/${locale}${path === "/" ? "/" : path}`;
+  if (locale === "en") return path;
+  const home = path === "/" || path.startsWith("/#") || path.startsWith("/?");
+  return `/${locale}${home ? path.slice(1) : path}`;
 }
 export function alternatePaths(path = "/") {
   return {

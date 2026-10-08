@@ -46,6 +46,34 @@ test("admin pages, uploads and previews require a session", async ({
   expect(preview.headers().location).toContain("/admin/login");
 });
 
+test("password guessing is stopped after ten wrong attempts", async ({
+  browser,
+}) => {
+  // A visitor of its own (by IP address), so other tests are not affected.
+  const context = await browser.newContext({
+    extraHTTPHeaders: { "x-forwarded-for": `test-${Date.now()}` },
+  });
+  await context.addCookies([{ name: "lh_admin_lang", value: "en", url: base }]);
+  const page = await context.newPage();
+  await page.goto("/admin/login");
+  const field = page.locator("input[name=password]");
+  const error = page.locator(".admin-error");
+  for (let i = 0; i < 10; i++) {
+    await field.fill(`wrong-${i}`);
+    await field.press("Enter");
+    await expect(error).toHaveText("That password is not correct.");
+    await page.goto("/admin/login");
+  }
+  // Now even the right password waits.
+  await field.fill(password);
+  await field.press("Enter");
+  await expect(error).toHaveText(
+    "Too many wrong passwords. Wait 15 minutes and try again.",
+  );
+  await expect(page).toHaveURL(/\/admin\/login$/);
+  await context.close();
+});
+
 test("a car is listed, edited, previewed as a draft and removed", async ({
   page,
   context,

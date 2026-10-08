@@ -14,5 +14,16 @@ const config: NextConfig = {
     deviceSizes: [640, 828, 1080, 1920],
     imageSizes: [128, 256, 384],
   },
+  // The temporary .vercel.app addresses stay out of search results, before
+  // and after a custom domain is connected; only the real domain is indexed.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: ".*\\.vercel\\.app" }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
+    ];
+  },
 };
 export default config;

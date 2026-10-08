@@ -398,5 +398,7 @@
   "Interior color": "Цвет салона",
   "Interior material": "Материал салона",
   "Airbags": "Подушки безопасности",
-  "VIN": "VIN-код"
+  "VIN": "VIN-код",
+  "Too many inquiries from this connection. Please wait a few minutes and try again.": "Слишком много заявок с этого подключения. Подождите несколько минут и попробуйте снова.",
+  "We are receiving too many inquiries right now. Please try again later.": "Сейчас мы получаем слишком много заявок. Пожалуйста, попробуйте позже."
 }

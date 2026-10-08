@@ -40,4 +40,8 @@ export interface Store {
   saveSitePhotoDrafts(changes: SitePhotoChange[]): Promise<void>;
   publishSitePhotos(): Promise<number>;
   discardSitePhotoDrafts(): Promise<number>;
+  // Rate limiting: one row per attempt, kept for a day. `countHits` returns
+  // the attempts in each window (in seconds, up to a day).
+  addHit(bucket: string): Promise<void>;
+  countHits(bucket: string, windows: number[]): Promise<number[]>;
 }

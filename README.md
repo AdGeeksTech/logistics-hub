@@ -49,7 +49,18 @@ A first deployment with storage connected starts empty: the cars and text edits 
 
 Without email configuration the form validates inputs, prepares a summary and offers a text-file download. It explicitly tells visitors nothing has been sent. No personal data is stored on the server.
 
-To enable delivery, copy `.env.example` to `.env.local` and supply a Resend API key, recipient email and verified sender email. Rebuild after configuring them. The server validates payloads, rejects cross-origin browser submissions and honeypot entries, and handles provider errors and timeouts without clearing form fields. Before a public campaign, configure rate limiting/bot protection with the deployment provider. No keys belong in browser code or source control.
+To enable delivery, copy `.env.example` to `.env.local` and supply a Resend API key, recipient email and verified sender email. Rebuild after configuring them. The server validates payloads, rejects cross-origin browser submissions and honeypot entries, and handles provider errors and timeouts without clearing form fields. No keys belong in browser code or source control.
+
+## Spam and password-guessing limits
+
+Attempts are counted in the database (`lib/rate-limit.ts`), per visitor by a keyed hash of the IP address; no address is stored and counts are deleted after a day.
+
+- Inquiries: 5 requests per visitor in 10 minutes and 20 a day; 100 emails a day from everyone together, so a spam flood cannot use up the email service's monthly allowance.
+- Admin sign-in: after 10 wrong passwords in 15 minutes (or 30 in a day) a visitor must wait, even with the right password.
+
+## Search engines
+
+`/sitemap.xml` lists the pages and every available or reserved car in all three languages, with language alternates; it updates as soon as a car is published. `/robots.txt` keeps crawlers out of `/admin` and `/api/`. Canonical and language links use the production domain (`VERCEL_PROJECT_PRODUCTION_URL`, or `SITE_URL` if set), and every `.vercel.app` address answers with `X-Robots-Tag: noindex`, so only the real domain is indexed once it is connected. After connecting it, redeploy and submit the sitemap in Google Search Console.
 
 ## Content and launch inputs
 

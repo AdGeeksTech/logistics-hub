@@ -398,5 +398,7 @@
   "Interior color": "სალონის ფერი",
   "Interior material": "სალონის მასალა",
   "Airbags": "აირბეგები",
-  "VIN": "VIN კოდი"
+  "VIN": "VIN კოდი",
+  "Too many inquiries from this connection. Please wait a few minutes and try again.": "ამ კავშირიდან ძალიან ბევრი განაცხადი გამოიგზავნა. დაელოდეთ რამდენიმე წუთს და სცადეთ თავიდან.",
+  "We are receiving too many inquiries right now. Please try again later.": "ამჟამად ძალიან ბევრ განაცხადს ვიღებთ. გთხოვთ, სცადეთ მოგვიანებით."
 }

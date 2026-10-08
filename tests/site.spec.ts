@@ -71,10 +71,19 @@ test("mobile menu, dealer page, FAQs and layouts work", async ({ page }) => {
   ).toBe(true);
 });
 
+// Inquiries are limited per visitor (by IP address); each test run poses
+// as a new visitor so repeated runs do not hit the limit.
+const visitor = () => ({
+  "x-forwarded-for": `test-${Date.now()}-${Math.random()}`,
+});
+
 test("inquiry endpoint validates payload and never claims success without configuration", async ({
   request,
 }) => {
-  expect((await request.post("/api/inquiry", { data: {} })).status()).toBe(400);
+  const headers = visitor();
+  expect(
+    (await request.post("/api/inquiry", { headers, data: {} })).status(),
+  ).toBe(400);
   expect(
     (
       await request.post("/api/inquiry", {
@@ -84,6 +93,7 @@ test("inquiry endpoint validates payload and never claims success without config
     ).status(),
   ).toBe(403);
   const response = await request.post("/api/inquiry", {
+    headers,
     data: {
       name: "Test Buyer",
       email: "buyer@example.com",
@@ -94,6 +104,54 @@ test("inquiry endpoint validates payload and never claims success without config
   });
   expect(response.status()).toBe(503);
   expect((await response.json()).error).toContain("not available");
+});
+
+test("one visitor cannot send more than five inquiries in ten minutes", async ({
+  request,
+}) => {
+  const headers = visitor();
+  for (let i = 0; i < 5; i++)
+    expect(
+      (await request.post("/api/inquiry", { headers, data: {} })).status(),
+    ).toBe(400);
+  const blocked = await request.post("/api/inquiry", { headers, data: {} });
+  expect(blocked.status()).toBe(429);
+  expect((await blocked.json()).error).toContain("Too many inquiries");
+  // Someone else is not affected.
+  expect(
+    (
+      await request.post("/api/inquiry", { headers: visitor(), data: {} })
+    ).status(),
+  ).toBe(400);
+});
+
+test("search engines get robots rules and a sitemap in every language", async ({
+  request,
+}) => {
+  const robots = await (await request.get("/robots.txt")).text();
+  expect(robots).toContain("Disallow: /admin");
+  expect(robots).toMatch(/Sitemap: https?:\/\/\S+\/sitemap\.xml/);
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  for (const path of [
+    "/",
+    "/ru",
+    "/ka",
+    "/cars",
+    "/ru/dealers",
+    "/ka/calculator",
+  ])
+    expect(sitemap).toMatch(new RegExp(`<loc>https?://[^<]+${path}</loc>`));
+  expect(sitemap).toContain('hreflang="x-default"');
+  expect(sitemap).not.toContain("/admin");
+  // Language links are absolute and point at final addresses.
+  const ru = await (await request.get("/ru")).text();
+  expect(ru).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+\/ru"\/>/);
+  // Only the real domain is indexed, never a temporary .vercel.app address.
+  const temporary = await request.get("/", {
+    headers: { host: "logistics-hub-ten.vercel.app" },
+  });
+  expect(temporary.headers()["x-robots-tag"]).toBe("noindex");
+  expect((await request.get("/")).headers()["x-robots-tag"]).toBeUndefined();
 });
 
 for (const width of [1440, 390])
