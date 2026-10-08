@@ -683,14 +683,24 @@ button {
   font-size: 10px;
   color: var(--light-muted);
 }
-.partner > strong {
-  font-family: var(--font-display);
-  font-size: 31px;
+.partner-brand {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
-  letter-spacing: 0.02em;
+  gap: var(--s4);
+  margin: var(--s3) 0 var(--s2);
+}
+.partner-logo {
+  display: block;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+.partner-brand strong {
+  font-family: var(--font-display), sans-serif;
+  font-size: 31px;
+  font-weight: 600;
+  line-height: 1.1;
 }
 .partner > p {
   font-size: 12px;
@@ -708,23 +718,35 @@ button {
   max-width: 145px;
   color: var(--muted);
 }
-.auction-names {
+/* Auction logos, in their own colours. Heights balance the marks
+   optically: the wide Manheim lockup sits lower than the compact IAA mark. */
+.auction-logos {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  gap: 20px;
-  font-size: 25px;
-  font-weight: 700;
-  letter-spacing: -0.055em;
+  gap: var(--s6) var(--s8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.auction-dot {
-  color: var(--orange);
-  font-size: 18px;
+.auction-logos li {
+  display: flex;
+  align-items: center;
 }
-.auction-names .manheim {
-  font-style: italic;
-  font-size: 24px;
+.auction-logos img {
+  width: auto;
+  height: 42px;
+  object-fit: contain;
+}
+.auction-logos .logo-iaa img {
+  height: 56px;
+}
+.auction-logos .logo-manheim img {
+  height: 38px;
+}
+.auction-logos .logo-adesa img {
+  height: 44px;
 }
 .auction-section > .text-link {
   font-size: 11px;
@@ -1197,8 +1219,17 @@ details[open] .faq-plus:after {
   .auction-section {
     gap: 24px;
   }
-  .auction-names {
-    font-size: 22px;
+  .auction-logos img {
+    height: 36px;
+  }
+  .auction-logos .logo-iaa img {
+    height: 48px;
+  }
+  .auction-logos .logo-manheim img {
+    height: 32px;
+  }
+  .auction-logos .logo-adesa img {
+    height: 38px;
   }
   .faq-section {
     gap: 48px;
@@ -1483,14 +1514,13 @@ details[open] .faq-plus:after {
     width: 100%;
     font-size: 11px;
   }
-  .auction-names {
+  /* Phones: two logos per row, each centred in its half. */
+  .auction-logos {
     flex-basis: 100%;
-    justify-content: space-between;
-    gap: 12px;
-    font-size: 21px;
-  }
-  .auction-names .manheim {
-    font-size: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+    gap: var(--s6) var(--s4);
   }
   .auction-section > .text-link {
     min-height: 44px;
@@ -2638,11 +2668,6 @@ html[lang="ka"] .language-switcher select {
   .origin-inner > a {
     font-size: clamp(19px, 7.4vw, 27px);
     padding-inline: clamp(8px, 3.2vw, 15px);
-  }
-  .auction-names {
-    flex-wrap: wrap;
-    row-gap: 4px;
-    font-size: clamp(17px, 5.6vw, 21px);
   }
 }
 /* The smallest phones: a slightly smaller logo keeps the header on screen. */

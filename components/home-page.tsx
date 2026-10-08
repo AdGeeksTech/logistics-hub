@@ -2,18 +2,19 @@ import { localizedPath, type Locale } from "@/lib/i18n";
 import { getT } from "@/lib/site-texts";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUpRight,
-  Check,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowDown, ArrowUpRight, Check, ShieldCheck } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Regions } from "@/components/regions";
 import { Inquiry } from "@/components/inquiry";
 import { LatestCars } from "@/components/latest-cars";
+// Logos are the owners' trademarks; sources in public/images/SOURCES.md.
+const auctionLogos = [
+  { name: "Copart", src: "/images/logos/copart.svg", width: 141, height: 53 },
+  { name: "IAA", src: "/images/logos/iaa.svg", width: 73, height: 53 },
+  { name: "Manheim", src: "/images/logos/manheim.svg", width: 240, height: 57 },
+  { name: "ADESA", src: "/images/logos/adesa.svg", width: 90, height: 48 },
+];
 const steps = [
   [
     "Vehicle selection",
@@ -275,10 +276,19 @@ export default async function Home({
               </div>
               <div className="partner">
                 <span>{t("Logistics in trusted hands")}</span>
-                <strong>
-                  LION TRANS
-                  <ArrowRight size={23} />
-                </strong>
+                {/* Lion Trans's site uses its group mark ("Lion Auto Auction"), so
+                    the name stays beside it. */}
+                <div className="partner-brand">
+                  <Image
+                    className="partner-logo"
+                    src="/images/logos/lion-trans.webp"
+                    alt=""
+                    width={160}
+                    height={160}
+                    sizes="72px"
+                  />
+                  <strong>Lion Trans</strong>
+                </div>
                 <p>
                   {t(
                     "Our logistics partner, helping connect your vehicle’s origin to its destination.",
@@ -290,16 +300,18 @@ export default async function Home({
         </section>
         <section className="auction-section container">
           <p>{t("Dealer access to leading US auctions")}</p>
-          <div className="auction-names">
-            <span>
-              Copart<span className="auction-dot">●</span>
-            </span>
-            <span>
-              IAA<span className="auction-dot">I</span>
-            </span>
-            <span className="manheim">Manheim</span>
-            <span>ADESA</span>
-          </div>
+          <ul className="auction-logos">
+            {auctionLogos.map((logo) => (
+              <li key={logo.name} className={`logo-${logo.name.toLowerCase()}`}>
+                <Image
+                  src={logo.src}
+                  alt={logo.name}
+                  width={logo.width}
+                  height={logo.height}
+                />
+              </li>
+            ))}
+          </ul>
           <Link href={localizedPath(locale, "/dealers")} className="text-link">
             {t("Find out more")}
             <ArrowUpRight size={16} />
