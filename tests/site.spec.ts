@@ -15,16 +15,27 @@ test("region keyboard selection prepopulates the inquiry, which is sent", async 
   await page.getByRole("link", { name: "Explore Europe" }).click();
   await expect(page.locator('select[name="region"]')).toHaveValue("Europe");
   await page.getByRole("button", { name: "Send inquiry" }).click();
-  await expect(page.locator('input[name="name"]')).toBeFocused();
+  // The browser stops an empty form at its first field.
+  expect(
+    await page
+      .locator('input[name="name"]')
+      .evaluate((el: HTMLInputElement) => el.validity.valueMissing),
+  ).toBe(true);
   await page.getByLabel("Full name").fill("Test Buyer");
   await page.getByLabel("Email address").fill("buyer@example.com");
   await page
     .getByLabel("What are you looking for?")
     .fill("Looking for a used estate car from Europe.");
   await page.getByRole("button", { name: "Send inquiry" }).click();
-  await expect(page.getByText("Your inquiry is on its way.")).toBeVisible();
-  // The form comes back empty for the next one.
-  await page.getByRole("button", { name: "Send another inquiry" }).click();
+  // Sending opens the thank-you page, the address to count conversions on.
+  await expect(page).toHaveURL(/\/thank-you$/);
+  await expect(page.locator("h1")).toContainText("Thank you.");
+  await expect(page.locator("meta[name=robots]")).toHaveAttribute(
+    "content",
+    /noindex/,
+  );
+  await page.getByRole("link", { name: /Send another inquiry/ }).click();
+  await expect(page).toHaveURL(/\/#inquiry$/);
   await expect(page.getByLabel("Full name")).toHaveValue("");
 });
 
@@ -190,10 +201,17 @@ for (const width of [1440, 390])
       "/ka/calculator",
       "/cars",
       "/ka/cars",
+      "/ru/thank-you",
       "/admin/login",
     ]) {
       await page.goto(route, { waitUntil: "networkidle" });
       await page.evaluate(() => document.fonts.ready);
+      // The title can arrive just after the page (Next.js streams it), and
+      // fading text would be measured mid-fade.
+      await expect(page).toHaveTitle(/\S/);
+      await page.evaluate(() =>
+        Promise.all(document.getAnimations().map((a) => a.finished)),
+      );
       const scan = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
         .analyze();

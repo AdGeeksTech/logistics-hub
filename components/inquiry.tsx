@@ -1,7 +1,8 @@
 "use client";
-import { type Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import { useRouter } from "next/navigation";
 import { useT } from "@/components/texts-provider";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, Check, Download, LoaderCircle } from "lucide-react";
 type Status = "idle" | "sending" | "sent" | "prepared" | "error";
 export function Inquiry({
@@ -18,11 +19,19 @@ export function Inquiry({
   initialMessage?: string;
 }) {
   const t = useT(locale);
+  const router = useRouter();
   const [status, setStatus] = useState<Status>("idle");
   const [region, setRegion] = useState(initialRegion);
   const [audience, setAudience] = useState(dealer ? "Dealer" : "Private buyer");
   const [summary, setSummary] = useState("");
   const [error, setError] = useState("");
+  // Until the page is interactive, a press would submit the form the
+  // browser's own way and nothing would reach the team.
+  const ready = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -54,6 +63,8 @@ export function Inquiry({
           ),
         );
       setStatus("sent");
+      // The thank-you page has its own address, for conversion tracking.
+      router.push(localizedPath(locale, "/thank-you"));
     } catch (err) {
       setError(
         err instanceof Error
@@ -116,6 +127,7 @@ export function Inquiry({
             </div>
           ) : (
             <form
+              method="post"
               onSubmit={submit}
               onInvalid={(event) => {
                 const field = event.target as HTMLInputElement;
@@ -240,7 +252,7 @@ export function Inquiry({
               )}
               <button
                 className="button button-orange form-submit"
-                disabled={status === "sending"}
+                disabled={!ready || status === "sending"}
                 type="submit"
               >
                 {status === "sending" ? (

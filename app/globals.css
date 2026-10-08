@@ -2751,3 +2751,70 @@ html[lang="ka"] .language-switcher select {
     grid-column: 1 / -1;
   }
 }
+
+/* Thank-you page, after an inquiry is sent. */
+.thank-you-hero {
+  padding-bottom: var(--s24);
+}
+.thank-you-mark {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-top: var(--s8);
+  margin-bottom: var(--s6);
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--deep);
+}
+.thank-you-hero p {
+  max-width: 520px;
+  margin-bottom: 0;
+  font-size: 16px;
+}
+.thank-you-next h2 {
+  margin-bottom: var(--s8);
+}
+.thank-you-next ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.thank-you-next a {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--s2);
+  height: 100%;
+  padding: var(--s6) var(--s12) var(--s6) var(--s6);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--navy);
+  transition: border-color 180ms var(--ease);
+}
+.thank-you-next a:hover {
+  border-color: var(--orange);
+}
+.thank-you-next strong {
+  font-size: 18px;
+}
+.thank-you-next span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.thank-you-next svg {
+  position: absolute;
+  top: var(--s6);
+  right: var(--s6);
+  color: var(--orange);
+}
+@media (max-width: 1050px) {
+  .thank-you-next ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

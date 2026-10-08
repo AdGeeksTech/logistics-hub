@@ -40,9 +40,8 @@ for (const [lang, copy] of [
     await page
       .getByRole("button", { name: copy["Send inquiry"], exact: true })
       .click();
-    await expect(
-      page.getByText(copy["Your inquiry is on its way."]),
-    ).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`/${lang}/thank-you$`));
+    await expect(page.locator("h1")).toContainText(copy["Thank you."]);
     await page.goto(`/${lang}/dealers?region=China#inquiry`);
     await expect(
       page.getByRole("radio", { name: copy.Dealer, exact: true }),

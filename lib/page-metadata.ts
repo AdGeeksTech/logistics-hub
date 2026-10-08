@@ -90,3 +90,14 @@ export async function calculatorMetadata(locale: Locale) {
     ),
   });
 }
+
+// Only reached after sending an inquiry, so kept out of search results.
+export async function thankYouMetadata(locale: Locale): Promise<Metadata> {
+  const t = await getT(locale);
+  return {
+    ...(await pageMetadata(locale, "/thank-you", {
+      title: t("Thank you.").replace(/[.!]$/, ""),
+    })),
+    robots: { index: false, follow: true },
+  };
+}

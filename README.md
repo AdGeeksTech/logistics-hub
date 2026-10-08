@@ -49,7 +49,7 @@ The code lives in the public GitHub repository `AdGeeksTech/logistics-hub`, conn
 
 ## Inquiry delivery
 
-Every inquiry sent through the site's form is saved in the database and listed in the admin under **Inquiries** (`/admin/inquiries`), newest first, with the contact details, a WhatsApp link for the phone number, the message, the visitor's language and the page it was sent from. Staff mark inquiries as handled or delete them; the admin menu shows how many are new.
+Every inquiry sent through the site's form is saved in the database and listed in the admin under **Inquiries** (`/admin/inquiries`), newest first, with the contact details, a WhatsApp link for the phone number, the message, the visitor's language and the page it was sent from. Staff mark inquiries as handled or delete them; the admin menu shows how many are new. After sending, visitors land on `/thank-you` (`/ru/thank-you`, `/ka/thank-you`), which is kept out of search results and is the page to count as a conversion in Google Ads, Meta or Analytics. Its texts are editable under Site texts → Thank-you page.
 
 Emailing each inquiry as well is optional: copy `.env.example` to `.env.local` (or set the variables in Vercel) with a Resend API key, recipient email and verified sender email. The email's reply address is the visitor's, so staff can answer directly. The server validates payloads, rejects cross-origin browser submissions and honeypot entries, and handles provider errors and timeouts without clearing form fields. Without a database or email configuration the form instead prepares a summary to download and says nothing was sent. No keys belong in browser code or source control.
 

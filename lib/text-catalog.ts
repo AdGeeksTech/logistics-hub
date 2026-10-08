@@ -224,6 +224,17 @@ export const textSections: { title: string; note?: string; keys: string[] }[] =
       ],
     },
     {
+      title: "Thank-you page (after an inquiry is sent)",
+      note: "The page also shows “Your inquiry is on its way.”, “Our team will contact you…”, “Send another inquiry” and the menu names “Cars from China” and “Fee calculator”, edited in their own sections.",
+      keys: [
+        "Thank you.",
+        "While you wait",
+        "See the cars we have selected in China, with clear prices and delivery to Tbilisi.",
+        "Estimate Copart and IAAI fees before you bid.",
+        "Looking for more than one vehicle? Tell us about the next one.",
+      ],
+    },
+    {
       title: "Dealers page",
       keys: [
         "For automotive dealers",

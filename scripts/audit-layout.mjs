@@ -274,6 +274,7 @@ for (const lang of ["", "/ru", "/ka"]) {
     "/cars/1",
     "/cars/2",
     "/cars/3",
+    "/thank-you",
   ])
     await run(visitor, `public${lang || "/en"}`, lang + path);
   await run(
@@ -306,7 +307,12 @@ for (const lang of ["", "/ru", "/ka"]) {
     `public${lang || "/en"} prepared`,
     lang + "/",
     async (page) => {
-      if (await page.locator(".prepared-result, .form-result").count()) return;
+      // Sending opens the thank-you page, audited on its own.
+      if (
+        page.url().includes("/thank-you") ||
+        (await page.locator(".prepared-result, .form-result").count())
+      )
+        return;
       await page.locator("input[name=name]").fill("Test");
       await page.locator("input[name=email]").fill("test@example.com");
       await page
