@@ -25,7 +25,7 @@ For layout changes, `node scripts/audit-layout.mjs` checks every page in every l
 
 Locally the admin works without any database: set `ADMIN_PASSWORD` in `.env.local`, run `npm run dev` and open `/admin`. Listings, edited texts and photos are saved under `.data/` (ignored by git), so nothing local reaches the live site.
 
-## Admin: car listings, site texts and site photos
+## Admin: car listings, site texts, site photos and inquiries
 
 `/admin` is protected by one shared password (`ADMIN_PASSWORD`). Sessions last 14 days; changing the password signs everyone out. The admin is in Georgian by default and can be switched to English.
 
@@ -49,15 +49,15 @@ The code lives in the public GitHub repository `AdGeeksTech/logistics-hub`, conn
 
 ## Inquiry delivery
 
-Without email configuration the form validates inputs, prepares a summary and offers a text-file download. It explicitly tells visitors nothing has been sent. No personal data is stored on the server.
+Every inquiry sent through the site's form is saved in the database and listed in the admin under **Inquiries** (`/admin/inquiries`), newest first, with the contact details, a WhatsApp link for the phone number, the message, the visitor's language and the page it was sent from. Staff mark inquiries as handled or delete them; the admin menu shows how many are new.
 
-To enable delivery, copy `.env.example` to `.env.local` and supply a Resend API key, recipient email and verified sender email. Rebuild after configuring them. The server validates payloads, rejects cross-origin browser submissions and honeypot entries, and handles provider errors and timeouts without clearing form fields. No keys belong in browser code or source control.
+Emailing each inquiry as well is optional: copy `.env.example` to `.env.local` (or set the variables in Vercel) with a Resend API key, recipient email and verified sender email. The email's reply address is the visitor's, so staff can answer directly. The server validates payloads, rejects cross-origin browser submissions and honeypot entries, and handles provider errors and timeouts without clearing form fields. Without a database or email configuration the form instead prepares a summary to download and says nothing was sent. No keys belong in browser code or source control.
 
 ## Spam and password-guessing limits
 
 Attempts are counted in the database (`lib/rate-limit.ts`), per visitor by a keyed hash of the IP address; no address is stored and counts are deleted after a day.
 
-- Inquiries: 5 requests per visitor in 10 minutes and 20 a day; 100 emails a day from everyone together, so a spam flood cannot use up the email service's monthly allowance.
+- Inquiries: 5 requests per visitor in 10 minutes and 20 a day; 100 accepted inquiries a day from everyone together, so a spam flood cannot fill the admin or use up the email service's monthly allowance.
 - Admin sign-in: after 10 wrong passwords in 15 minutes (or 30 in a day) a visitor must wait, even with the right password.
 
 ## Search engines

@@ -1,6 +1,7 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Listing } from "../cars";
+import type { Inquiry } from "../inquiries";
 import type { SitePhotoRow, Store, TextRow } from "./types";
 
 // Local development store: one JSON file, rewritten atomically. Production
@@ -12,6 +13,8 @@ type Data = {
   texts: TextRow[];
   photos?: SitePhotoRow[];
   hits?: { bucket: string; at: number }[];
+  inquiries?: Inquiry[];
+  nextInquiryId?: number;
 };
 
 export function fileStore(directory: string): Store {
@@ -205,6 +208,42 @@ export function fileStore(directory: string): Store {
           });
         clean(data);
         return pending.length;
+      });
+    },
+    async listInquiries() {
+      return ((await load()).inquiries ?? []).toSorted(
+        (a, b) => b.createdAt.localeCompare(a.createdAt) || b.id - a.id,
+      );
+    },
+    async countNewInquiries() {
+      return ((await load()).inquiries ?? []).filter((i) => i.status === "new")
+        .length;
+    },
+    createInquiry(fields) {
+      return update((data) => {
+        data.nextInquiryId ??= 1;
+        const inquiry: Inquiry = {
+          ...fields,
+          id: data.nextInquiryId++,
+          status: "new",
+          createdAt: now(),
+        };
+        (data.inquiries ??= []).push(inquiry);
+        return inquiry;
+      });
+    },
+    setInquiryStatus(id, status) {
+      return update((data) => {
+        const inquiry = data.inquiries?.find((i) => i.id === id);
+        if (inquiry) inquiry.status = status;
+        return Boolean(inquiry);
+      });
+    },
+    deleteInquiry(id) {
+      return update((data) => {
+        const before = data.inquiries?.length ?? 0;
+        data.inquiries = (data.inquiries ?? []).filter((i) => i.id !== id);
+        return data.inquiries.length < before;
       });
     },
     async addHit(bucket) {

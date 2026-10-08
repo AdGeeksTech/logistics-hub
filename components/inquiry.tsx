@@ -38,7 +38,13 @@ export function Inquiry({
       const response = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, audience, region, locale }),
+        body: JSON.stringify({
+          ...data,
+          audience,
+          region,
+          locale,
+          page: location.pathname,
+        }),
       });
       const result = await response.json();
       if (!response.ok)

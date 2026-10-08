@@ -1,4 +1,5 @@
 import type { Listing, ListingFields } from "../cars";
+import type { Inquiry, InquiryFields } from "../inquiries";
 import type { Locale } from "../i18n";
 import type { SitePhotoSlot } from "../site-photo-slots";
 import type { Store, TextChange, TextRow } from "./types";
@@ -34,6 +35,12 @@ const schema = [
     has_draft BOOLEAN NOT NULL DEFAULT false,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
   )`,
+  `CREATE TABLE IF NOT EXISTS inquiries (
+    id SERIAL PRIMARY KEY,
+    status TEXT NOT NULL DEFAULT 'new',
+    data JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )`,
   `CREATE TABLE IF NOT EXISTS rate_hits (
     bucket TEXT NOT NULL,
     at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -56,6 +63,14 @@ function toListing(row: Record<string, unknown>): Listing {
     createdAt: iso(row.created_at)!,
     updatedAt: iso(row.updated_at)!,
     publishedAt: iso(row.published_at),
+  };
+}
+function toInquiry(row: Record<string, unknown>): Inquiry {
+  return {
+    ...(json(row.data) as InquiryFields),
+    id: Number(row.id),
+    status: row.status as Inquiry["status"],
+    createdAt: iso(row.created_at)!,
   };
 }
 function split({ status, ...data }: ListingFields) {
@@ -221,6 +236,40 @@ export function postgresStore(query: Query): Store {
         `DELETE FROM site_photos WHERE published IS NULL AND NOT has_draft`,
       );
       return rows.length;
+    },
+    async listInquiries() {
+      const rows = await run(
+        `SELECT id, status, data, created_at FROM inquiries ORDER BY created_at DESC, id DESC`,
+      );
+      return rows.map(toInquiry);
+    },
+    async countNewInquiries() {
+      const [row] = await run(
+        `SELECT count(*) AS n FROM inquiries WHERE status = 'new'`,
+      );
+      return Number(row.n);
+    },
+    async createInquiry(fields) {
+      const [row] = await run(
+        `INSERT INTO inquiries (data) VALUES ($1::jsonb)
+         RETURNING id, status, data, created_at`,
+        [JSON.stringify(fields)],
+      );
+      return toInquiry(row);
+    },
+    async setInquiryStatus(id, status) {
+      const rows = await run(
+        `UPDATE inquiries SET status = $2 WHERE id = $1 RETURNING id`,
+        [id, status],
+      );
+      return rows.length > 0;
+    },
+    async deleteInquiry(id) {
+      const rows = await run(
+        `DELETE FROM inquiries WHERE id = $1 RETURNING id`,
+        [id],
+      );
+      return rows.length > 0;
     },
     async addHit(bucket) {
       await run(

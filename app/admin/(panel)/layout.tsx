@@ -5,7 +5,7 @@ import { logout } from "@/app/admin/actions";
 import { requireAdmin } from "@/lib/auth";
 import { getAdminLang } from "@/lib/admin-session";
 import { adminTranslator } from "@/lib/admin-i18n";
-import { storeKind } from "@/lib/store";
+import { getStore, storeKind } from "@/lib/store";
 import { LogOut } from "lucide-react";
 
 export default async function PanelLayout({
@@ -17,6 +17,11 @@ export default async function PanelLayout({
   const lang = await getAdminLang();
   const t = adminTranslator(lang);
   const kind = storeKind();
+  // Shown as a count beside Inquiries in the menu.
+  const newInquiries =
+    (await getStore()
+      ?.countNewInquiries()
+      .catch(() => 0)) ?? 0;
   return (
     <>
       <a className="skip-link" href="#main">
@@ -25,7 +30,7 @@ export default async function PanelLayout({
       <header className="admin-bar">
         <div className="admin-bar-inner">
           <Brand />
-          <AdminNav lang={lang} />
+          <AdminNav lang={lang} newInquiries={newInquiries} />
           <div className="admin-bar-end">
             <LanguageToggle lang={lang} />
             <form action={logout}>

@@ -1,4 +1,5 @@
 import { localizedPath, type Locale } from "@/lib/i18n";
+import { inquiriesEnabled } from "@/lib/inquiries";
 import { getT } from "@/lib/site-texts";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -41,11 +42,7 @@ export default async function Calculator({
         <Inquiry
           locale={locale}
           initialRegion="USA"
-          connected={Boolean(
-            process.env.RESEND_API_KEY &&
-            process.env.INQUIRY_TO_EMAIL &&
-            process.env.INQUIRY_FROM_EMAIL,
-          )}
+          connected={inquiriesEnabled()}
         />
       </main>
       <Footer locale={locale} />

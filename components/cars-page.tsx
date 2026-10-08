@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { inquiriesEnabled } from "@/lib/inquiries";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -164,11 +165,7 @@ export default async function CarsPage({
         <Inquiry
           locale={locale}
           initialRegion="China"
-          connected={Boolean(
-            process.env.RESEND_API_KEY &&
-            process.env.INQUIRY_TO_EMAIL &&
-            process.env.INQUIRY_FROM_EMAIL,
-          )}
+          connected={inquiriesEnabled()}
         />
       </main>
       <Footer locale={locale} />

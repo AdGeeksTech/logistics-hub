@@ -1,4 +1,5 @@
 import type { Listing, ListingFields } from "../cars";
+import type { Inquiry, InquiryFields, InquiryStatus } from "../inquiries";
 import type { Locale } from "../i18n";
 import type { SitePhoto, SitePhotoSlot } from "../site-photo-slots";
 
@@ -40,6 +41,11 @@ export interface Store {
   saveSitePhotoDrafts(changes: SitePhotoChange[]): Promise<void>;
   publishSitePhotos(): Promise<number>;
   discardSitePhotoDrafts(): Promise<number>;
+  listInquiries(): Promise<Inquiry[]>;
+  countNewInquiries(): Promise<number>;
+  createInquiry(fields: InquiryFields): Promise<Inquiry>;
+  setInquiryStatus(id: number, status: InquiryStatus): Promise<boolean>;
+  deleteInquiry(id: number): Promise<boolean>;
   // Rate limiting: one row per attempt, kept for a day. `countHits` returns
   // the attempts in each window (in seconds, up to a day).
   addHit(bucket: string): Promise<void>;

@@ -421,3 +421,52 @@ test("the link preview image is replaced, cropped to 1200 × 630 and restored", 
   expect((await request.get(new URL(url).pathname)).status()).toBe(404);
   expect(photoCount()).toBe(before);
 });
+
+test("inquiries sent through the site appear in the admin", async ({
+  page,
+  context,
+  browser,
+}) => {
+  const visitor = await (
+    await browser.newContext({
+      extraHTTPHeaders: { "x-forwarded-for": `test-${Date.now()}` },
+    })
+  ).newPage();
+  const name = `Inquiry test ${Date.now()}`;
+  await visitor.goto("/ka/dealers");
+  await visitor.locator("input[name=name]").fill(name);
+  await visitor.locator("input[name=email]").fill("dealer@example.com");
+  await visitor.locator("input[name=phone]").fill("555 12 34 56");
+  await visitor
+    .locator("textarea[name=message]")
+    .fill("Ten Copart lots a month.\nSedans and SUVs.");
+  await visitor.locator(".form-submit").click();
+  await expect(visitor.locator(".form-result")).toBeVisible();
+  await visitor.context().close();
+
+  await signIn(page, context);
+  page.on("dialog", (dialog) => dialog.accept());
+  await expect(page.locator(".admin-nav .nav-count")).toBeVisible();
+  await page.getByRole("link", { name: /^Inquiries/ }).click();
+  const card = page.locator("article.inquiry", {
+    has: page.getByRole("heading", { name }),
+  });
+  await expect(card).toContainText("Dealer");
+  await expect(card).toContainText("ქართული");
+  await expect(card.locator(".inquiry-message")).toHaveText(
+    "Ten Copart lots a month.\nSedans and SUVs.",
+  );
+  await expect(card.getByRole("link", { name: "WhatsApp" })).toHaveAttribute(
+    "href",
+    "https://wa.me/995555123456",
+  );
+  await expect(card.getByRole("link", { name: "/ka/dealers" })).toBeVisible();
+  expect(await violations(page)).toEqual([]);
+
+  await card.getByRole("button", { name: "Mark as handled" }).click();
+  await expect(card).toHaveCount(0);
+  await page.getByRole("link", { name: /^Handled/ }).click();
+  await expect(card).toBeVisible();
+  await card.getByRole("button", { name: "Delete" }).click();
+  await expect(card).toHaveCount(0);
+});

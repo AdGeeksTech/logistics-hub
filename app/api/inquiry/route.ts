@@ -1,5 +1,13 @@
 import { NextResponse } from "next/server";
+import { isLocale } from "@/lib/i18n";
+import {
+  audiences,
+  emailConfigured,
+  regions,
+  type InquiryFields,
+} from "@/lib/inquiries";
 import { isLimited, limits, recordAttempt, visitorKey } from "@/lib/rate-limit";
+import { getStore } from "@/lib/store";
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin)
@@ -61,8 +69,8 @@ export async function POST(request: Request) {
     phone.length > 40 ||
     message.length < 10 ||
     message.length > 3000 ||
-    !["Private buyer", "Dealer"].includes(audience) ||
-    !["Not sure yet", "USA", "Europe", "China"].includes(region)
+    !(audiences as readonly string[]).includes(audience) ||
+    !(regions as readonly string[]).includes(region)
   )
     return NextResponse.json(
       {
@@ -71,8 +79,21 @@ export async function POST(request: Request) {
       },
       { status: 400 },
     );
-  const { RESEND_API_KEY, INQUIRY_TO_EMAIL, INQUIRY_FROM_EMAIL } = process.env;
-  if (!RESEND_API_KEY || !INQUIRY_TO_EMAIL || !INQUIRY_FROM_EMAIL)
+  const locale = val("locale");
+  const page = val("page");
+  const inquiry: InquiryFields = {
+    name,
+    email,
+    phone,
+    audience: audience as InquiryFields["audience"],
+    region: region as InquiryFields["region"],
+    locale: isLocale(locale) ? locale : "en",
+    message,
+    page: /^\/[\w\-./%]{0,200}$/.test(page) ? page : null,
+  };
+  // Saved for the admin's Inquiries page, and emailed when configured.
+  const store = getStore();
+  if (!store && !emailConfigured())
     return NextResponse.json(
       {
         error:
@@ -80,7 +101,7 @@ export async function POST(request: Request) {
       },
       { status: 503 },
     );
-  if (await isLimited("inquiry-emails", limits.inquiryEmails))
+  if (await isLimited("inquiries", limits.inquiriesTotal))
     return NextResponse.json(
       {
         error:
@@ -88,7 +109,31 @@ export async function POST(request: Request) {
       },
       { status: 429, headers: { "Retry-After": "3600" } },
     );
-  await recordAttempt("inquiry-emails");
+  await recordAttempt("inquiries");
+  const [saved, emailed] = await Promise.all([
+    store
+      ?.createInquiry(inquiry)
+      .then(() => true)
+      .catch((error) => {
+        console.error("Saving an inquiry failed", error);
+        return false;
+      }) ?? false,
+    emailConfigured() ? sendEmail(inquiry) : false,
+  ]);
+  if (saved || emailed) return NextResponse.json({ ok: true });
+  return NextResponse.json(
+    {
+      error:
+        "Your inquiry could not be sent. Your details are still in the form; please try again.",
+    },
+    { status: 502 },
+  );
+}
+
+async function sendEmail(inquiry: InquiryFields) {
+  const { RESEND_API_KEY, INQUIRY_TO_EMAIL, INQUIRY_FROM_EMAIL } = process.env;
+  const { name, email, phone, audience, region, locale, message, page } =
+    inquiry;
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -101,19 +146,14 @@ export async function POST(request: Request) {
         to: [INQUIRY_TO_EMAIL],
         reply_to: email,
         subject: `Logistic Hub: ${audience} inquiry — ${region}`,
-        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "Not provided"}\nRegion: ${region}\nCustomer: ${audience}\nPreferred language: ${["en", "ru", "ka"].includes(val("locale")) ? val("locale") : "en"}\n\n${message}`,
+        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "Not provided"}\nRegion: ${region}\nCustomer: ${audience}\nPreferred language: ${locale}${page ? `\nSent from: ${page}` : ""}\n\n${message}`,
       }),
       signal: AbortSignal.timeout(12000),
     });
-    if (!response.ok) throw new Error("Provider failure");
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json(
-      {
-        error:
-          "Your inquiry could not be sent. Your details are still in the form; please try again.",
-      },
-      { status: 502 },
-    );
+    if (!response.ok) throw new Error(`Provider status ${response.status}`);
+    return true;
+  } catch (error) {
+    console.error("Emailing an inquiry failed", error);
+    return false;
   }
 }

@@ -56,7 +56,7 @@ export const limits = {
     { max: 5, seconds: 10 * 60 },
     { max: 20, seconds: 86400 },
   ],
-  // Inquiry emails from everyone together, which keeps a flood of spam
-  // from using up the email service's monthly allowance.
-  inquiryEmails: [{ max: 100, seconds: 86400 }],
+  // Accepted inquiries from everyone together, which keeps a flood of spam
+  // from filling the admin or using up the email service's allowance.
+  inquiriesTotal: [{ max: 100, seconds: 86400 }],
 } satisfies Record<string, Rule[]>;

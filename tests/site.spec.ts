@@ -1,9 +1,11 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("region keyboard selection prepopulates inquiry and download contains user details", async ({
+test("region keyboard selection prepopulates the inquiry, which is sent", async ({
   page,
 }) => {
+  // A visitor of its own, so the per-visitor inquiry limit never applies.
+  await page.setExtraHTTPHeaders({ "x-forwarded-for": `test-${Date.now()}` });
   await page.goto("/");
   await page.getByRole("tab", { name: "USA", exact: true }).focus();
   await page.keyboard.press("ArrowRight");
@@ -12,26 +14,15 @@ test("region keyboard selection prepopulates inquiry and download contains user 
   ).toHaveAttribute("aria-selected", "true");
   await page.getByRole("link", { name: "Explore Europe" }).click();
   await expect(page.locator('select[name="region"]')).toHaveValue("Europe");
-  await page.getByRole("button", { name: "Prepare my inquiry" }).click();
+  await page.getByRole("button", { name: "Send inquiry" }).click();
   await expect(page.locator('input[name="name"]')).toBeFocused();
   await page.getByLabel("Full name").fill("Test Buyer");
   await page.getByLabel("Email address").fill("buyer@example.com");
   await page
     .getByLabel("What are you looking for?")
     .fill("Looking for a used estate car from Europe.");
-  await page.getByRole("button", { name: "Prepare my inquiry" }).click();
-  await expect(page.getByText("Your inquiry is ready.")).toBeVisible();
-  await expect(page.getByText(/Nothing has been sent/)).toBeVisible();
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Download inquiry" }).click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("logistic-hub-inquiry.txt");
-  const stream = await download.createReadStream();
-  const chunks = [];
-  for await (const chunk of stream!) chunks.push(chunk);
-  const text = Buffer.concat(chunks).toString();
-  expect(text).toContain("Region: Europe");
-  expect(text).toContain("Test Buyer");
+  await page.getByRole("button", { name: "Send inquiry" }).click();
+  await expect(page.getByText("Your inquiry is on its way.")).toBeVisible();
 });
 
 test("mobile menu, dealer page, FAQs and layouts work", async ({ page }) => {
@@ -77,7 +68,7 @@ const visitor = () => ({
   "x-forwarded-for": `test-${Date.now()}-${Math.random()}`,
 });
 
-test("inquiry endpoint validates payload and never claims success without configuration", async ({
+test("inquiry endpoint validates the payload and keeps valid inquiries", async ({
   request,
 }) => {
   const headers = visitor();
@@ -102,8 +93,8 @@ test("inquiry endpoint validates payload and never claims success without config
       region: "USA",
     },
   });
-  expect(response.status()).toBe(503);
-  expect((await response.json()).error).toContain("not available");
+  expect(response.status()).toBe(200);
+  expect(await response.json()).toEqual({ ok: true });
 });
 
 test("one visitor cannot send more than five inquiries in ten minutes", async ({

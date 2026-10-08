@@ -1,4 +1,5 @@
 import { localizedPath, type Locale } from "@/lib/i18n";
+import { inquiriesEnabled } from "@/lib/inquiries";
 import { sitePhoto } from "@/lib/site-photos";
 import { getT } from "@/lib/site-texts";
 import Image from "next/image";
@@ -369,11 +370,7 @@ export default async function Home({
         <Inquiry
           locale={locale}
           initialRegion={initialRegion}
-          connected={Boolean(
-            process.env.RESEND_API_KEY &&
-            process.env.INQUIRY_TO_EMAIL &&
-            process.env.INQUIRY_FROM_EMAIL,
-          )}
+          connected={inquiriesEnabled()}
         />
       </main>
       <Footer locale={locale} />

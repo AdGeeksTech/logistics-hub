@@ -169,5 +169,17 @@
   "Link preview image": "ბმულის გაზიარების სურათი",
   "Shown when a link to the homepage, the dealers page, the calculator or the car catalogue is shared on WhatsApp, Facebook, Telegram or X. Car pages show the car’s own photo.": "ჩანს, როცა მთავარი გვერდის, დილერების გვერდის, კალკულატორის ან ავტომობილების კატალოგის ბმულს აზიარებენ WhatsApp-ზე, Facebook-ზე, Telegram-ზე ან X-ზე. ავტომობილის გვერდებზე ჩანს თავად ავტომობილის ფოტო.",
   "A landscape photo at least 1200 pixels across. It is cropped to 1200 × 630 around the focus point, and some apps trim the edges a little, so keep text away from them.": "ჰორიზონტალური ფოტო, სიგანით მინიმუმ 1200 პიქსელი. ფოტო ფოკუსის წერტილის გარშემო 1200 × 630 ზომაზე იჭრება, ზოგი აპლიკაცია კიდეებსაც ოდნავ ჭრის, ამიტომ ტექსტი კიდეებთან ახლოს ნუ განათავსეთ.",
-  "The title and description come from Site texts: the site-wide section and each page’s own texts.": "სათაური და აღწერა საიტის ტექსტებიდან მოდის: საერთო განყოფილებიდან და თითოეული გვერდის ტექსტებიდან."
+  "The title and description come from Site texts: the site-wide section and each page’s own texts.": "სათაური და აღწერა საიტის ტექსტებიდან მოდის: საერთო განყოფილებიდან და თითოეული გვერდის ტექსტებიდან.",
+  "Inquiries": "მოთხოვნები",
+  "new": "ახალი",
+  "Requests sent through the form on the site, newest first. Reply by email or phone, then mark them as handled.": "საიტის ფორმით გამოგზავნილი მოთხოვნები, უახლესი ზემოთ. უპასუხეთ ელფოსტით ან ტელეფონით, შემდეგ მონიშნეთ დამუშავებულად.",
+  "Handled": "დამუშავებული",
+  "No new inquiries. New ones appear here as soon as they are sent.": "ახალი მოთხოვნები არ არის. ახალი მოთხოვნა აქ გამოგზავნისთანავე გამოჩნდება.",
+  "No handled inquiries yet.": "დამუშავებული მოთხოვნები ჯერ არ არის.",
+  "Sent from": "გამოგზავნილია გვერდიდან",
+  "Mark as handled": "დამუშავებულად მონიშვნა",
+  "Mark as new": "ახალ მოთხოვნად დაბრუნება",
+  "Delete": "წაშლა",
+  "Delete this inquiry? This cannot be undone.": "წავშალოთ ეს მოთხოვნა? წაშლილის აღდგენა შეუძლებელია.",
+  "That did not work. Reload the page and try again.": "ვერ მოხერხდა. განაახლეთ გვერდი და სცადეთ თავიდან."
 }

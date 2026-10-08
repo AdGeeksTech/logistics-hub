@@ -157,6 +157,36 @@ for (const [name, open] of backends) {
     await close();
   });
 
+  test(`${name} store keeps inquiries`, async () => {
+    const [store, close] = await open();
+    const fields = {
+      name: "Nino",
+      email: "nino@example.com",
+      phone: "+995 555 00 00 00",
+      audience: "Private buyer" as const,
+      region: "China" as const,
+      locale: "ka" as const,
+      message: "Looking for a BYD Seal.\nBudget $30,000.",
+      page: "/ka/cars/1-byd-seal-2024",
+    };
+    const first = await store.createInquiry(fields);
+    expect(first).toMatchObject({ ...fields, status: "new" });
+    const second = await store.createInquiry({ ...fields, name: "Giorgi" });
+    expect((await store.listInquiries()).map((i) => i.name)).toEqual([
+      "Giorgi",
+      "Nino",
+    ]);
+    expect(await store.countNewInquiries()).toBe(2);
+    expect(await store.setInquiryStatus(first.id, "handled")).toBe(true);
+    expect(await store.countNewInquiries()).toBe(1);
+    expect(await store.deleteInquiry(second.id)).toBe(true);
+    expect(await store.deleteInquiry(second.id)).toBe(false);
+    expect(await store.listInquiries()).toEqual([
+      { ...first, status: "handled" },
+    ]);
+    await close();
+  });
+
   test(`${name} store counts attempts per bucket and window`, async () => {
     const [store, close] = await open();
     expect(await store.countHits("login:a", [60, 86400])).toEqual([0, 0]);

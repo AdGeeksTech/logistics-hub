@@ -349,3 +349,26 @@ export async function discardSitePhotos(
     };
   }
 }
+
+export async function setInquiryStatus(id: number, status: string) {
+  await requireAdmin();
+  if (!Number.isInteger(id) || (status !== "new" && status !== "handled"))
+    return { ok: false };
+  try {
+    return { ok: await storeOrError().setInquiryStatus(id, status) };
+  } catch (error) {
+    console.error("Updating an inquiry failed", error);
+    return { ok: false };
+  }
+}
+
+export async function deleteInquiry(id: number) {
+  await requireAdmin();
+  if (!Number.isInteger(id)) return { ok: false };
+  try {
+    return { ok: await storeOrError().deleteInquiry(id) };
+  } catch (error) {
+    console.error("Deleting an inquiry failed", error);
+    return { ok: false };
+  }
+}

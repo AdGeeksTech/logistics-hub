@@ -5,9 +5,13 @@ for (const [lang, copy] of [
   ["ru", ru],
   ["ka", ka],
 ] as const) {
-  test(`${lang}: translated routes, validation, region prefill and download`, async ({
+  test(`${lang}: translated routes, validation, region prefill and sending`, async ({
     page,
   }) => {
+    // A visitor of its own, so the per-visitor inquiry limit never applies.
+    await page.setExtraHTTPHeaders({
+      "x-forwarded-for": `test-${lang}-${Date.now()}`,
+    });
     await page.goto(`/${lang}/?region=Europe#inquiry`);
     await expect(page.locator("html")).toHaveAttribute("lang", lang);
     await expect(page.locator("select[name=region]")).toHaveValue("Europe");
@@ -15,7 +19,7 @@ for (const [lang, copy] of [
       page.getByRole("radio", { name: copy["Private buyer"], exact: true }),
     ).toBeVisible();
     await page
-      .getByRole("button", { name: copy["Prepare my inquiry"], exact: true })
+      .getByRole("button", { name: copy["Send inquiry"], exact: true })
       .click();
     expect(
       await page
@@ -34,24 +38,11 @@ for (const [lang, copy] of [
           : "ვეძებ ავტომობილს ევროპიდან.",
       );
     await page
-      .getByRole("button", { name: copy["Prepare my inquiry"], exact: true })
+      .getByRole("button", { name: copy["Send inquiry"], exact: true })
       .click();
-    await expect(page.getByText(copy["Your inquiry is ready."])).toBeVisible();
-    const pending = page.waitForEvent("download");
-    await page
-      .getByRole("button", { name: copy["Download inquiry"], exact: true })
-      .click();
-    const download = await pending;
-    expect(download.suggestedFilename()).toBe(
-      `logistic-hub-inquiry-${lang}.txt`,
-    );
-    const stream = await download.createReadStream();
-    const chunks = [];
-    for await (const chunk of stream!) chunks.push(chunk);
-    const text = Buffer.concat(chunks).toString();
-    expect(text).toContain(copy["VEHICLE INQUIRY"]);
-    expect(text).toContain(copy["Europe"]);
-    expect(text).not.toContain("Private buyer");
+    await expect(
+      page.getByText(copy["Your inquiry is on its way."]),
+    ).toBeVisible();
     await page.goto(`/${lang}/dealers?region=China#inquiry`);
     await expect(
       page.getByRole("radio", { name: copy.Dealer, exact: true }),

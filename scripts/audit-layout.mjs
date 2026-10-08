@@ -260,7 +260,10 @@ const openIf = (selector) => async (page) => {
 };
 
 // Public pages, in each language and in their interactive states.
-const visitor = await browser.newContext();
+// Its own visitor address, so repeated runs stay under the inquiry limit.
+const visitor = await browser.newContext({
+  extraHTTPHeaders: { "x-forwarded-for": `audit-${Date.now()}` },
+});
 for (const lang of ["", "/ru", "/ka"]) {
   for (const path of [
     "/",
@@ -303,7 +306,7 @@ for (const lang of ["", "/ru", "/ka"]) {
     `public${lang || "/en"} prepared`,
     lang + "/",
     async (page) => {
-      if (await page.locator(".prepared-result").count()) return;
+      if (await page.locator(".prepared-result, .form-result").count()) return;
       await page.locator("input[name=name]").fill("Test");
       await page.locator("input[name=email]").fill("test@example.com");
       await page
@@ -350,6 +353,7 @@ if (!publicOnly) {
       "/admin/cars/2",
       "/admin/texts",
       "/admin/photos",
+      "/admin/inquiries",
     ])
       await run(admin, `admin/${lang}`, path);
     // A replaced photo adds the focus point and description fields. The
