@@ -45,6 +45,8 @@ The public site keeps working without any of this, showing its built-in texts an
 
 A first deployment with storage connected starts empty: the cars and text edits made locally stay on that computer.
 
+The code lives in the public GitHub repository `AdGeeksTech/logistics-hub`, connected to the Vercel project: every push to `main` deploys to production, and other branches get preview deployments. Secrets stay in Vercel's environment variables, never in the repository.
+
 ## Inquiry delivery
 
 Without email configuration the form validates inputs, prepares a summary and offers a text-file download. It explicitly tells visitors nothing has been sent. No personal data is stored on the server.
