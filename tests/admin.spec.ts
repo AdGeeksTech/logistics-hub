@@ -17,12 +17,35 @@ async function signIn(page: Page, context: BrowserContext) {
   await page.locator("input[name=password]").press("Enter");
   await expect(page).toHaveURL(/\/admin\/cars$/);
 }
-const violations = async (page: Page) =>
-  (
-    await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
-      .analyze()
-  ).violations.map((v) => ({ id: v.id, nodes: v.nodes.map((n) => n.target) }));
+async function violations(page: Page) {
+  // The title can arrive just after the page (Next.js streams it), and
+  // fading text would be measured mid-fade.
+  await expect(page).toHaveTitle(/\S/);
+  await page.evaluate(() =>
+    Promise.all(document.getAnimations().map((a) => a.finished)),
+  );
+  const scan = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  return scan.violations.map((v) => ({
+    id: v.id,
+    nodes: v.nodes.map((n) => n.target),
+  }));
+}
+// Live, a publish shows on the very next page load; the local dev server
+// can serve the previous version once more, so checks after publishing
+// reload until they pass.
+async function afterPublish(
+  page: Page,
+  path: string,
+  check: () => Promise<void>,
+) {
+  await expect(async () => {
+    await page.goto(path);
+    await check();
+  }).toPass({ timeout: 15000 });
+}
+const quick = { timeout: 1000 };
 const photoCount = () => {
   try {
     return readdirSync(uploads).length;
@@ -253,11 +276,15 @@ test("site texts are saved as drafts, previewed and then published", async ({
   await page.goto("/admin/texts");
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(page.getByText("Published.")).toBeVisible();
-  await visitor.goto("/");
-  await expect(visitor.locator(".hero h1")).toContainText("YOUR NEXT EV.");
+  await afterPublish(visitor, "/", () =>
+    expect(visitor.locator(".hero h1")).toContainText("YOUR NEXT EV.", quick),
+  );
   expect((await visitor.goto("/ka/dealers"))?.status()).toBe(200);
-  await expect(visitor.locator(".dealer-hero .button")).toContainText(
-    "დილერებთან თანამშრომლობა",
+  await afterPublish(visitor, "/ka/dealers", () =>
+    expect(visitor.locator(".dealer-hero .button")).toContainText(
+      "დილერებთან თანამშრომლობა",
+      quick,
+    ),
   );
 
   await search.fill("YOUR NEXT EV.");
@@ -266,8 +293,9 @@ test("site texts are saved as drafts, previewed and then published", async ({
   await page.getByRole("button", { name: "Restore the original" }).click();
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(page.getByText("Published.")).toBeVisible();
-  await visitor.goto("/");
-  await expect(visitor.locator(".hero h1")).toContainText("YOUR NEXT CAR.");
+  await afterPublish(visitor, "/", () =>
+    expect(visitor.locator(".hero h1")).toContainText("YOUR NEXT CAR.", quick),
+  );
   for (const path of ["/dealers", "/ka/dealers", "/ru/calculator"])
     expect((await visitor.goto(path))?.status()).toBe(200);
   await expect(visitor.locator("html")).toHaveAttribute("lang", "ru");
@@ -325,9 +353,10 @@ test("site photos are replaced as drafts, previewed, published and restored", as
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(page.getByText("Published.")).toBeVisible();
   await expect(hero).toHaveAttribute("data-state", "edited");
-  await visitor.goto("/");
   const image = visitor.locator(".hero-image");
-  await expect(image).toHaveAttribute("src", /api%2Fuploads/);
+  await afterPublish(visitor, "/", () =>
+    expect(image).toHaveAttribute("src", /api%2Fuploads/, quick),
+  );
   await expect(image).toHaveAttribute("alt", "A silver coupe in a showroom");
   await expect(image).toHaveCSS("object-position", "30% 50%");
   // Without a Georgian description, the English one is used.
@@ -367,10 +396,12 @@ test("site photos are replaced as drafts, previewed, published and restored", as
   await expect(page.getByText("Published.")).toBeVisible();
   await expect(hero).toHaveAttribute("data-state", "original");
   expect(photoCount()).toBe(before);
-  await visitor.goto("/");
-  await expect(visitor.locator(".hero-image")).toHaveAttribute(
-    "src",
-    /hero-porsche/,
+  await afterPublish(visitor, "/", () =>
+    expect(visitor.locator(".hero-image")).toHaveAttribute(
+      "src",
+      /hero-porsche/,
+      quick,
+    ),
   );
   await visitor.context().close();
 });
@@ -403,8 +434,10 @@ test("the link preview image is replaced, cropped to 1200 × 630 and restored", 
   await share.getByLabel("Top to bottom").fill("80");
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(page.getByText("Published.")).toBeVisible();
+  await expect
+    .poll(ogImage, { timeout: 15000 })
+    .toMatch(/\/share\/[0-9a-f]{16}\.jpg$/);
   const url = await ogImage();
-  expect(url).toMatch(/\/share\/[0-9a-f]{16}\.jpg$/);
   const image = await request.get(new URL(url).pathname);
   expect(image.headers()["content-type"]).toBe("image/jpeg");
   const size = await sharp(await image.body()).metadata();
@@ -417,8 +450,14 @@ test("the link preview image is replaced, cropped to 1200 × 630 and restored", 
     .click();
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(page.getByText("Published.")).toBeVisible();
-  expect(await ogImage()).toMatch(/\/images\/share\/logistic-hub-ka\.jpg$/);
-  expect((await request.get(new URL(url).pathname)).status()).toBe(404);
+  await expect
+    .poll(ogImage, { timeout: 15000 })
+    .toMatch(/\/images\/share\/logistic-hub-ka\.jpg$/);
+  await expect
+    .poll(async () => (await request.get(new URL(url).pathname)).status(), {
+      timeout: 15000,
+    })
+    .toBe(404);
   expect(photoCount()).toBe(before);
 });
 
@@ -441,7 +480,7 @@ test("inquiries sent through the site appear in the admin", async ({
     .locator("textarea[name=message]")
     .fill("Ten Copart lots a month.\nSedans and SUVs.");
   await visitor.locator(".form-submit").click();
-  await expect(visitor.locator(".form-result")).toBeVisible();
+  await expect(visitor).toHaveURL(/\/ka\/thank-you$/);
   await visitor.context().close();
 
   await signIn(page, context);

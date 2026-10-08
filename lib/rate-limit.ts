@@ -58,5 +58,8 @@ export const limits = {
   ],
   // Accepted inquiries from everyone together, which keeps a flood of spam
   // from filling the admin or using up the email service's allowance.
-  inquiriesTotal: [{ max: 100, seconds: 86400 }],
+  // INQUIRY_DAILY_LIMIT changes it (the local test server raises it).
+  inquiriesTotal: [
+    { max: Number(process.env.INQUIRY_DAILY_LIMIT) || 100, seconds: 86400 },
+  ],
 } satisfies Record<string, Rule[]>;

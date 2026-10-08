@@ -17,9 +17,15 @@ type Data = {
   nextInquiryId?: number;
 };
 
+// One write queue per file for the whole process: route handlers and
+// server actions can each load this module separately, and their writes
+// must still not interleave, or one would undo the other.
+const queues = ((
+  globalThis as { lhStoreQueues?: Map<string, Promise<unknown>> }
+).lhStoreQueues ??= new Map());
+
 export function fileStore(directory: string): Store {
   const file = join(directory, "store.json");
-  let queue: Promise<unknown> = Promise.resolve();
   async function load(): Promise<Data> {
     try {
       return JSON.parse(await readFile(file, "utf8"));
@@ -31,7 +37,7 @@ export function fileStore(directory: string): Store {
   }
   // Writes run one at a time so concurrent saves cannot lose each other.
   function update<T>(change: (data: Data) => T): Promise<T> {
-    const next = queue.then(async () => {
+    const next = (queues.get(file) ?? Promise.resolve()).then(async () => {
       const data = await load();
       const result = change(data);
       await mkdir(directory, { recursive: true });
@@ -39,7 +45,10 @@ export function fileStore(directory: string): Store {
       await rename(`${file}.tmp`, file);
       return result;
     });
-    queue = next.catch(() => {});
+    queues.set(
+      file,
+      next.catch(() => {}),
+    );
     return next;
   }
   const clean = (data: Data) => {
